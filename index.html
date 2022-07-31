@@ -1,0 +1,481 @@
+<!DOCTYPE HTML>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <title>ANMG</title>
+  
+  <meta name="author" content="ANMG">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+  <link rel="icon" type="image/png" href="images/anmg_batman_2.png">
+</head>
+
+<body>
+  <table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+    <tr style="padding:0px">
+      <td style="padding:0px">
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+          <tr style="padding:0px">
+            <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <p style="text-align:center">
+                <name>Angel Martínez-González</name>
+              </p>
+              <p>
+                 I am a computer vision scientist at Amazon Berlin.
+                 I received my PhD from the <a href="https://www.epfl.ch/education/phd/">Doctoral School of Electrical Engineering</a>
+                 at <a href="https://www.epfl.ch/">École Polytechnique Fédérale de Lausanne (EPFL)</a>, Switzerland under
+                 the supervision of <a href="https://www.idiap.ch/~odobez/">Dr. Jean-Marc Odobez</a>
+                 in the Perception Group at <a href="http://www.idiap.ch">Idiap Research Institute</a>.
+                 Under the course of my PhD I interned at Google and Amazon working with deep learning and computer vision.
+              </p>
+              <p>
+                I obtained a MSc degree in Computer Science at <a href="https://www.cimat.mx/">Matematical Research Center (CIMAT)</a>
+                during which I did a research internship at the <a href="https://www.laas.fr/public/">Laboratoire d'Analyse et d'Architecture des Systèmes (LAAS-CNRS)</a>.
+                Before that, I was a SWE at Intel.
+              </p>
+              <p style="text-align:center">
+                <a href="mailto:angel.martinez@idiap.ch">Email</a> &nbsp/&nbsp
+                <a href="data/anmg_cv.pdf">CV</a> &nbsp/&nbsp
+                <a href="https://scholar.google.com/citations?user=lSx9iH0AAAAJ&hl=es">Google Scholar</a>
+              </p>
+            </td>
+            <td style="padding:2.5%;width:40%;max-width:40%">
+              <a><img style="width:100%;max-width:100%" alt="profile photo" src="images/anmg_durstein_circle.png" class="hoverZoomLink"></a>
+            </td>
+          </tr>
+        </tbody></table>
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+            <tr>
+            <td style="padding:20px;width:100%;vertical-align:middle">
+              <heading>Publications</heading>
+              <p>
+                I'm interested in computer vision, machine learning, and applications for Human-Computer Interaction.
+              </p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+
+          <tr onmouseout="potr_stop()" onmouseover="potr_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='potr_test'>
+                <img src='images/pred.gif' width="160">
+                </div>
+                <img src='images/potr-eps-converted-to.png' width="160">
+              </div>
+              <script type="text/javascript">
+                function potr_start() {
+                  document.getElementById('potr_test').style.opacity = "1";
+                }
+
+                function potr_stop() {
+                  document.getElementById('potr_test').style.opacity = "0";
+                }
+                potr_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>Pose Transformers: Human Motion Prediction with Non-Autoregressive Transformers</papertitle>
+              </a>
+              <br>
+              <strong>Angel Martínez-González</strong>,
+              <a href="http://michael-villamizar.com/bio.html">Michael Villamizar</a>,
+              <a href="https://www.idiap.ch/~odobez/">Jean-Marc Odobez</a>
+              <br>
+              <em>IEEE/CVF International Conference on Computer Vision <em>, 2021
+              <br>
+              <a href="https://openaccess.thecvf.com/content/ICCV2021W/SoMoF/papers/Martinez-Gonzalez_Pose_Transformers_POTR_Human_Motion_Prediction_With_Non-Autoregressive_Transformers_ICCVW_2021_paper.pdf">paper</a>
+              /
+              <a href="https://github.com/idiap/potr">project page</a>
+              /
+              <a href="data/anmg_potr_iccv_poster.pdf">poster</a>
+              <p></p>
+              <p>A new non-autoregressive Transformer architecture to predict 3D human motion and activities.</p>
+            </td>
+          </tr>
+
+
+          <tr onmouseout="push_stop()" onmouseover="push_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='push_test'>
+                <img src='images/anmg_hg_push.gif' width="160">
+                </div>
+                <img src='images/anmg_hg_push.jpg' width="160">
+              </div>
+              <script type="text/javascript">
+                function push_start() {
+                  document.getElementById('push_test').style.opacity = "1";
+                }
+
+                function push_stop() {
+                  document.getElementById('push_test').style.opacity = "0";
+                }
+                push_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>An Efficient Image-to-Image Translation HourGlass-based Architecture for Object Pushing Policy Learning</papertitle>
+              </a>
+              <br>
+              <a href="https://www.ias.informatik.tu-darmstadt.de/Team/MarcoEwerton">Marco Ewerton</a>,
+              <strong>Angel Martínez-González</strong>,
+              <a href="https://www.idiap.ch/~odobez/">Jean-Marc Odobez</a>
+              <br>
+              <em>IEEE/RSJ International Conference on Intelligent Robots and Systems<em>, 2021
+              <br>
+              <a href="https://arxiv.org/pdf/2108.01034.pdf">paper</a>
+              /
+              <a href="https://github.com/idiap/hourglass_push">project page</a>
+              <p></p>
+              <p>An object pushing policy based using an Hourglass-based CNN architecture.</p>
+            </td>
+          </tr>
+
+          <tr onmouseout="itop_stop()" onmouseover="itop_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='itop_test'>
+                <img src='images/anmg_itop_test.gif' width="160">
+                </div>
+                <img src='images/anmg_itop_test.jpg' width="160">
+              </div>
+              <script type="text/javascript">
+                function itop_start() {
+                  document.getElementById('itop_test').style.opacity = "1";
+                }
+
+                function itop_stop() {
+                  document.getElementById('itop_test').style.opacity = "0";
+                }
+                itop_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>Residual Pose: A Decoupled Approach for Depth-Based 3D Human Pose Estimation</papertitle>
+              </a>
+              <br>
+              <strong>Angel Martínez-González</strong>,
+              <a href="http://michael-villamizar.com/bio.html">Michael Villamizar</a>,
+              <a href="https://www.idiap.ch/~ocanevet/">Olivier Canévet</a>,
+              <a href="https://www.idiap.ch/~odobez/">Jean-Marc Odobez</a>
+              <br>
+              <em>IEEE/RSJ International Conference on Intelligent Robots and Systems<em>, 2020
+              <br>
+              <a href="http://publications.idiap.ch/downloads/papers/2020/Martinez-Gonzalez_IROS2020_2020.pdf">paper</a>
+              /
+              <a href="https://github.com/idiap/residual_pose">project page</a>
+              /
+              <a href="https://www.youtube.com/watch?v=gYEnqQKGTz8">video</a>
+              <p></p>
+              <p>A new 3D pose estimation method that relies in residual pose modeling suitable for multi-person scenarios.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <img src='images/anmg_mvap.png' width="160">
+              </div>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>WatchNet++: Efficient and accurate depth-based network for detecting people attacks and intrusion</papertitle>
+              </a>
+              <br>
+              <a href="http://michael-villamizar.com/bio.html">Michael Villamizar</a>,
+              <strong>Angel Martínez-González</strong>,
+              <a href="https://www.idiap.ch/~ocanevet/">Olivier Canévet</a>,
+              <a href="https://www.idiap.ch/~odobez/">Jean-Marc Odobez</a>
+              <br>
+              <em>Machine Vision and Applications (MVAP)<em>, 2020
+              <br>
+              <a href="http://publications.idiap.ch/downloads/papers/2020/Villamizar_MVAP_2020.pdf">paper</a>
+              /
+              <a href="https://www.youtube.com/watch?v=9AgqqXJD0FI">video</a>
+              /
+              <a href="http://michael-villamizar.com/files/mvap20.bib">BibTex</a>
+              <p></p>
+              <p>Detecting people from top-view images for atack detection in security airlocks</p>
+            </td>
+          </tr>
+
+          <tr onmouseout="panoptic_stop()" onmouseover="panoptic_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='panoptic'>
+                <img src="images/anmg_panoptic.gif" width="160">
+                </div>
+                <img src='images/anmg_panoptic.jpg' width="160">
+              </div>
+              <script type="text/javascript">
+                function panoptic_start() {
+                  document.getElementById('panoptic').style.opacity = "1";
+                }
+
+                function panoptic_stop() {
+                  document.getElementById('panoptic').style.opacity = "0";
+                }
+                panoptic_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>Efficient Convolutional Neural Networks for Depth-Based Multi-Person Pose Estimation</papertitle>
+              </a>
+              <br>
+              <strong>Angel Martínez-González</strong>,
+              <a href="http://michael-villamizar.com/bio.html">Michael Villamizar</a>,
+              <a href="https://www.idiap.ch/~ocanevet/">Olivier Canévet</a>,
+              <a href="https://www.idiap.ch/~odobez/">Jean-Marc Odobez</a>
+              <br>
+              <em>IEEE Transactions on Circuits and Systems for Video Technology</em>, 2020 (accepted Nov. 2019)
+              <br>
+              <a href="https://arxiv.org/pdf/1912.00711.pdf">paper</a>
+              /
+              <a href="https://www.idiap.ch/dataset/dih">data</a>
+              /
+              <a href="https://github.com/idiap/fast_pose_machines">project page</a>
+              <p></p>
+              <p>Leveraging lightweight CNN, domain adaptation and knowledge distillation for 2D pose estimation.</p>
+            </td>
+          </tr>
+
+
+          <tr onmouseout="limbs_stop()" onmouseover="limbs_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='limbs'>
+                <img src="images/anmg_limbs.gif" width="160">
+                </div>
+                <img src='images/anmg_limbs.jpg' width="160">
+              </div>
+              <script type="text/javascript">
+                function limbs_start() {
+                  document.getElementById('limbs').style.opacity = "1";
+                }
+
+                function limbs_stop() {
+                  document.getElementById('limbs').style.opacity = "0";
+                }
+                limbs_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>Investigating Depth Domain Adaptation for Efficient Human Pose Estimation</papertitle>
+              </a>
+              <br>
+              <strong>Angel Martínez-González</strong>,
+              <a href="http://michael-villamizar.com/bio.html">Michael Villamizar</a>,
+              <a href="https://www.idiap.ch/~ocanevet/">Olivier Canévet</a>,
+              <a href="https://www.idiap.ch/~odobez/">Jean-Marc Odobez</a>
+              <br>
+              <em>ECCV Workshop on Human Behavior Understanding</em>, 2018
+              <br>
+              <a href="http://www.idiap.ch/~odobez/publications/MartinezVillamizarCanevetOdobez-ECCVW-2018.pdf">paper</a>
+              /
+              <a href="https://www.idiap.ch/dataset/dih">data</a>
+              <p></p>
+              <p>Investigates domain adaptation to close the covariance shift gap from learning with synthetic data.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <img src='images/anmg_avss.png' width="160">
+              </div>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>WatchNet: Efficient and Depth-based Network for People Detection in Video Surveillance Systems</papertitle>
+              </a>
+              <br>
+              <a href="http://michael-villamizar.com/bio.html">Michael Villamizar</a>,
+              <strong>Angel Martínez-González</strong>,
+              <a href="https://www.idiap.ch/~ocanevet/">Olivier Canévet</a>,
+              <a href="https://www.idiap.ch/~odobez/">Jean-Marc Odobez</a>
+              <br>
+              <em>IEEE Int. Conf. on Advanced Video and Signal-Based Processing (AVSS)</em>, 2018
+              <br>
+              <a href="http://www.idiap.ch/~odobez/publications/VillamizarMartinezCanevetOdobez-AVSS-2018.pdf">paper</a>
+              <p></p>
+              <p>People detection from top-to-down facing images for security systems..</p>
+            </td>
+          </tr>
+
+
+          <tr onmouseout="dih_stop()" onmouseover="dih_start()">
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <div class="two" id='dih'>
+                <img src="images/anmg_dih.gif" width="160">
+                </div>
+                <img src='images/anmg_dih.jpg' width="160">
+              </div>
+              <script type="text/javascript">
+                function dih_start() {
+                  document.getElementById('dih').style.opacity = "1";
+                }
+
+                function dih_stop() {
+                  document.getElementById('dih').style.opacity = "0";
+                }
+                dih_stop()
+              </script>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>Real-time Convolutional Networks for Depth-based Human Pose Estimation</a>
+              </a>
+              <br>
+              <strong>Angel Martínez-González</strong>,
+              <a href="http://michael-villamizar.com/bio.html">Michael Villamizar</a>,
+              <a href="https://www.idiap.ch/~ocanevet/">Olivier Canévet</a>,
+              <a href="https://www.idiap.ch/~odobez/">Jean-Marc Odobez</a>
+              <br>
+              <em> IEEE/RSJ International Conference on Intelligent Robots and Systems<em>, 2018
+              <br>
+              <a href="https://arxiv.org/pdf/1910.13911.pdf">paper</a>
+              <p></p>
+              <p>Introducing a new CNN architecture for real time pose estimation from synthetic depth images.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <img src='images/anmg_micai.png' width="160">
+              </div>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>Real Time Face Detection Using Neural Networks</papertitle>
+              </a>
+              <br>
+              <strong>Angel Martínez-González</strong>,
+              <a>Victor Ayala Ramirez</a>
+              <br>
+              <em>IEEE Mexican International Conference on Artificial Intelligence<em>, 2011
+              <br>
+              <a href="https://ieeexplore.ieee.org/document/6118999">paper</a>
+              <p></p>
+              <p>Skin color-based searching and face detection with neural networks.</p>
+            </td>
+          </tr>
+
+        </tbody></table>
+
+
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+            <tr>
+            <td style="padding:20px;width:100%;vertical-align:middle">
+              <heading>Cool Projects</heading>
+            </td>
+          </tr>
+        </tbody></table>
+
+
+
+
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+
+
+          <tr>
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <img src='images/depth_generation.gif' width="160">
+              </div>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>DepthHuman: A tool for depth image synthesis for human pose estimation </papertitle>
+              </a>
+              <br>
+              We have created the DIH dataset a large scale dataset of synthetic depth images with annotations for depth-based 2D pose estimation with this tool.
+              <br>
+              <a href="https://github.com/idiap/depth_human_synthesis">code</a>
+              /
+              <a href="https://www.idiap.ch/en/dataset/dih">dataset</a>
+              <p></p>
+            </td>
+          </tr>
+
+
+          <tr>
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <img src='images/anmg_vizdoom_rl_small.gif' width="160">
+              </div>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>ViZDoom and Reinforcement Learning </papertitle>
+              </a>
+              <br>
+              Solving navigation tasks in a 3d FPS game environment for autonomous agents with deep reinforcement learning methods.
+              <br>
+              <a href="https://gitlab.idiap.ch/fmarelli/hellboy">project page</a>
+              <p></p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <img src='images/anmg_montecarlo_localization_small.gif' width="160">
+              </div>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:middle">
+              <a>
+              <papertitle>Montecarlo Localization.</papertitle>
+              </a>
+              <br>
+              When an autonomous drone needs to localize itself in a map, motion models and particle filters come to place to save the day.
+              <br>
+              <a href="https://github.com/legan78/montecarlo_localization">code</a>
+              <p></p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:20px;width:25%;vertical-align:middle">
+              <div class="one">
+                <img src='images/anmg_gc_engine_test_small.gif' width="160">
+              </div>
+            </td>
+            <td style="padding:20px;width:75%;vertical-align:top">
+              <a>
+              <papertitle>3D object culling methods for virtual reality gaming (collaboration with GCS).</papertitle>
+              </a>
+              <br>
+              <a href="http://www.gamecoderstudios.com/">GameCoder Studios (GCS)</a>
+              <p></p>
+            </td>
+          </tr>
+        </tbody></table>
+
+        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>             
+           <tr>                                                                   
+             <td style="padding:0px">                                             
+               <br>                                                               
+               <p style="text-align:right;font-size:small;">                      
+                 <a href="https://jonbarron.info">Amazing profile page!</a>
+              </p>
+              </br>
+            </td>
+          <tr>
+        </tbody></table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>
