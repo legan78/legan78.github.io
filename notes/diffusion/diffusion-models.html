@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notes on Diffusion Models | Angel Martínez-González</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="../../stylesheet.css" />
+  <link rel="icon" type="image/png" href="../images/anmg_batman_2.png" />
+
+  <!-- Original font feel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- MathJax for LaTeX -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']],
+        displayMath: [['\\[', '\\]'], ['$$', '$$']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+  <div class="site-container note-page-container">
+    <main class="note-main">
+      <div class="section-card note-card">
+        <p class="note-back">
+          <a href="../index.html">← Back to profile</a>
+        </p>
+
+        <h1 class="note-title">Notes on Diffusion Models</h1>
+        <p class="note-meta">Angel Martínez-González · Draft notes</p>
+
+        <!-- div class="note-toc">
+          <strong>Contents</strong>
+          <ul>
+            <li><a href="#overview">1. Introduction</a></li>
+            <li><a href="#forward-process">2. Forward process</a></li>
+            <li><a href="#reverse-process">3. Reverse process</a></li>
+            <li><a href="#training-objective">4. Training objective</a></li>
+            <li><a href="#sampling">5. Sampling intuition</a></li>
+          </ul>
+        </div -->
+
+        <section id="overview" class="note-section">
+          <h2>1. Introduction</h2>
+          <p>
+           Diffusion models are a class of generative models inspired by the
+           idea in Non-Equilibrium Statistical Physics, which states:
+          </p>
+
+          <blockquote>
+          <strong> 
+            We can gradually convert one distribution into another using a Markov chain
+          </strong>
+          </blockquote>
+
+          <p>
+          The essential idea is to first systematically and gradually destroy the 
+          structure of the data distrubution by a diffusion process. Then, learn
+          a model for the reverse process to restore the data. This two step yield
+          a high flexible generative model for the data with the following advantages
+          1) it is easy to sample points from the learned distribution, 2) the data
+          becomes "explainable" as the learned distribution is simpler than the
+          original, and 3) samples become more diverse as it is easier to avoid
+          the "collapsing mode effect".
+          </p>
+
+        </section>
+
+        <section id="forward-process" class="note-section">
+          <h2>2. Diffusion Process Overview</h2>
+
+          <p>
+          Diffusion generative models are composed of two steps: 1) a forward
+          diffusion process where we add noise to the image, and 2) a reverse
+          diffusion process were we denoise until obtaining the original data.
+          In our context we will consider that data samples are images.
+          While the first step can be easily achieved, we need a model to learn
+          how to denoise the image into a meaningful example in our distribution.
+          </p>
+          
+          <h3> Forward diffusion process</h3>
+
+          </p>
+          The goal in the forward process is to convert a complex distribution to 
+          an easier one where sampling is not difficult, and achieving some level 
+          of explainability. 
+          </p>
+
+          <p>
+          The process starts by slowly and iteratively add random noise to corrupt
+          the data, such that it moves away from its original distribution. Noise
+          is iteratively injected into the data following a schedule that controls
+          the "amount". Adding noise for \(T\) steps leads the data to be unrecognizable
+          and part of a different distribution, e.g. isotropic gaussian after
+          iteratively adding gaussian noise.
+          </p>
+
+          <img src="forward_process.png" width=762px />
+
+          <p>
+          Ideally the data is transformed into a distribution where is easy to 
+          sample, e.g. we transform the distribution of images with cats to an
+          isotropic gaussian distribution.
+          </p>
+
+          <img src="data_distribution.png" width=762px />
+
+
+          <h3> Reverse diffusion process </h3>
+
+          <p>
+          The goal is to recover the original distribution from the less complex
+          and more tractable data distribution. This is achieved by iteratively
+          applying a denoising model to the input corrupted data. At each step in
+          reverse \(t\) the model predicts the denoised data \(x_{t-1}\) from 
+          input \(x_t\).
+          </p>
+
+          <img src="unet_cat.png" width=512px />
+
+          <p>
+          Why do we need to iteratively denoise the data? Why not going directly
+          from noise to true data sample in a single step? <strong> Short answer</strong>:
+          predicting these "small perturbations" is more tractable than attempting
+          to describe the full data in a single step. Think about going back from
+          one subspace to another following the traces of your original path.
+          </p>
+
+        </section>
+
+        <section id="formality" class="note-section">
+          <h2>Some "formality"</h2>
+
+          <img src="markov_chain.png" width=762px />
+          
+          In a diffusion process, both fowrward and backward steps are modeled by
+          a Markov process. The forward process, defined by the transitions \(q(x_t|x_{t-1})\),
+          is modeled by a Markov chain that gradually adds Gaussian noise according
+          to a fixed schedule. The reverse process \(p_{\theta} (x_{t-1}|x_t)\) is
+          also a Markov chain with learned distribution parameters \(\theta\).
+
+        <h3> Forward process </h3>
+
+          The forward process is modeled by a fixed Markov chain that corrupts the
+          input data with Gaussian noise with fixed variance schedule parametrized
+          with \(\beta \in [0,1]\).
+
+          <img src="forward_formal.png" width=762px />
+
+        </section>
+
+
+        <!-- section>
+          <p>
+            The forward diffusion process adds Gaussian noise in small steps:
+          </p>
+
+          \[
+          q(x_t \mid x_{t-1}) = \mathcal{N}\left(x_t; \sqrt{1-\beta_t}\,x_{t-1}, \beta_t I\right)
+          \]
+
+          <p>
+            A useful closed-form expression is:
+          </p>
+
+          \[
+          q(x_t \mid x_0) = \mathcal{N}\left(x_t; \sqrt{\bar{\alpha}_t}\,x_0,\; (1-\bar{\alpha}_t)I\right)
+          \]
+
+          <p>
+            where
+          </p>
+
+          \[
+          \alpha_t = 1 - \beta_t,\qquad
+          \bar{\alpha}_t = \prod_{s=1}^t \alpha_s
+          \]
+        </section>
+
+        <section id="reverse-process" class="note-section">
+          <h2>3. Reverse process</h2>
+          <p>
+            The model learns a reverse Markov chain that removes noise step by step:
+          </p>
+
+          \[
+          p_\theta(x_{t-1} \mid x_t)
+          \]
+
+          <p>
+            In practice, the network often predicts the added noise
+            \(\epsilon_\theta(x_t, t)\) rather than directly predicting \(x_0\).
+          </p>
+        </section>
+
+        <section id="training-objective" class="note-section">
+          <h2>4. Training objective</h2>
+          <p>
+            A common simplified objective is the denoising loss:
+          </p>
+
+          \[
+          \mathcal{L}_{\text{simple}} =
+          \mathbb{E}_{x_0,\epsilon,t}
+          \left[
+            \left\|
+              \epsilon - \epsilon_\theta(x_t, t)
+            \right\|_2^2
+          \right]
+          \]
+
+          <p>
+            with
+          </p>
+
+          \[
+          x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t}\,\epsilon,
+          \qquad \epsilon \sim \mathcal{N}(0,I)
+          \]
+        </section>
+
+        <section id="sampling" class="note-section">
+          <h2>5. Sampling intuition</h2>
+          <p>
+            Sampling starts from random noise \(x_T \sim \mathcal{N}(0,I)\) and
+            iteratively applies the learned reverse process until reaching a clean
+            sample \(x_0\).
+          </p>
+
+          <figure class="note-figure">
+            <img src="../images/example_diffusion_diagram.png" alt="Diffusion process diagram">
+            <figcaption>
+              Example placeholder figure for the noising and denoising process.
+            </figcaption>
+          </figure>
+        </section-->
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>
+
+
+
