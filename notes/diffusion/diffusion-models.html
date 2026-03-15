@@ -9,12 +9,10 @@
   <link rel="stylesheet" href="../../stylesheet.css" />
   <link rel="icon" type="image/png" href="../images/anmg_batman_2.png" />
 
-  <!-- Original font feel -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- MathJax for LaTeX -->
   <script>
     window.MathJax = {
       tex: {
@@ -27,13 +25,16 @@
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+
 </head>
 <body>
   <div class="site-container note-page-container">
     <main class="note-main">
       <div class="section-card note-card">
         <p class="note-back">
-          <a href="../index.html">← Back to profile</a>
+          <a href="../../index.html">← Back to profile</a>
         </p>
 
         <h1 class="note-title">Notes on Diffusion Models</h1>
@@ -52,7 +53,7 @@
 
         <section id="overview" class="note-section">
           <h2>1. Introduction</h2>
-          <p>
+          <p class="justified">
            Diffusion models are a class of generative models inspired by the
            idea in Non-Equilibrium Statistical Physics, which states:
           </p>
@@ -63,7 +64,7 @@
           </strong>
           </blockquote>
 
-          <p>
+          <p class="justified">
           The essential idea is to first systematically and gradually destroy the 
           structure of the data distrubution by a diffusion process. Then, learn
           a model for the reverse process to restore the data. This two step yield
@@ -79,7 +80,7 @@
         <section id="forward-process" class="note-section">
           <h2>2. Diffusion Process Overview</h2>
 
-          <p>
+          <p class="justified">
           Diffusion generative models are composed of two steps: 1) a forward
           diffusion process where we add noise to the image, and 2) a reverse
           diffusion process were we denoise until obtaining the original data.
@@ -90,13 +91,13 @@
           
           <h3> Forward diffusion process</h3>
 
-          </p>
+          <p class="justified">
           The goal in the forward process is to convert a complex distribution to 
           an easier one where sampling is not difficult, and achieving some level 
           of explainability. 
           </p>
 
-          <p>
+          <p class="justified">
           The process starts by slowly and iteratively add random noise to corrupt
           the data, such that it moves away from its original distribution. Noise
           is iteratively injected into the data following a schedule that controls
@@ -105,20 +106,31 @@
           iteratively adding gaussian noise.
           </p>
 
-          <img src="forward_process.png" width=762px />
+          <figure style="text-align:center;">
+            <img src="forward_process.png" width=762px />
+            <figcaption>
+            Figure. Starting from a clean image, the forward process gradually adds noise
+            until it becomes unrecognizable after \(T\) steps.
+            </figcaption>
+          </figure>
 
-          <p>
+          <p class="justified">
           Ideally the data is transformed into a distribution where is easy to 
           sample, e.g. we transform the distribution of images with cats to an
           isotropic gaussian distribution.
           </p>
 
-          <img src="data_distribution.png" width=762px />
-
+          <figure style="text-align:center;">
+            <img src="data_distribution.png" width=762px />
+            <figcaption>
+              Figure. A complex data distribution is transformed into a less complex
+              and tractable distribution that is easier to sample from.
+            </figcaption>
+          </figure>
 
           <h3> Reverse diffusion process </h3>
 
-          <p>
+          <p class="justified">
           The goal is to recover the original distribution from the less complex
           and more tractable data distribution. This is achieved by iteratively
           applying a denoising model to the input corrupted data. At each step in
@@ -126,9 +138,15 @@
           input \(x_t\).
           </p>
 
-          <img src="unet_cat.png" width=512px />
+          <figure style="text-align:center;">
+            <img src="unet_cat.png" width=512px />
+            <figcaption>
+              Figure. A denoising model is iteratively applied to the corrupted data to 
+              recover the original data.
+            </figcaption>
+          </figure>
 
-          <p>
+          <p class="justified">
           Why do we need to iteratively denoise the data? Why not going directly
           from noise to true data sample in a single step? <strong> Short answer</strong>:
           predicting these "small perturbations" is more tractable than attempting
@@ -139,25 +157,204 @@
         </section>
 
         <section id="formality" class="note-section">
-          <h2>Some "formality"</h2>
+          <h2>3. Some "formality"</h2>
 
-          <img src="markov_chain.png" width=762px />
+          <figure style="text-align:center;">
+            <img src="markov_chain.png" width=762px />
+            <figcaption>
+              Figure. Markov process of forward \(q(x_t|x_{t-1})\) and reverse 
+              \(p_{\theta}(x_{t-1}|x_{t})\) diffusion.
+            </figcaption>
+          </figure>
           
+          <p class="justified">
           In a diffusion process, both fowrward and backward steps are modeled by
           a Markov process. The forward process, defined by the transitions \(q(x_t|x_{t-1})\),
           is modeled by a Markov chain that gradually adds Gaussian noise according
           to a fixed schedule. The reverse process \(p_{\theta} (x_{t-1}|x_t)\) is
           also a Markov chain with learned distribution parameters \(\theta\).
+          </p>
 
-        <h3> Forward process </h3>
+          <h3> Forward process </h3>
 
+          <p class="justified">
           The forward process is modeled by a fixed Markov chain that corrupts the
           input data with Gaussian noise with fixed variance schedule parametrized
           with \(\beta \in [0,1]\).
+          </p>
 
+          <figure style="text-align:center;">
           <img src="forward_formal.png" width=762px />
+            <figcaption>
+              Figure. Forward process adding noise to data according to a Gaussian noise schedule.
+            </figcaption>
+          </figure>
+
+          <p class="justified">
+          The joint probability distribution of the forward diffusion process is given by
+          </p>
+
+          \[
+          q(x_{1:T}|x_0) = \prod_{t=1}^Tq(x|x_{t-1}).
+          \]
+
+          <p class="justified">
+          The transition potentials are modeled by a Gaussian kernel:
+          </p>
+
+          \[
+          q(x_t|x_{t-1}) = \mathcal{N}(x_t;\sqrt{1-\beta_t}x_{t-1}, \beta_t\mathbf{I}).
+          \]
+
+          <p class="justified">
+          Given a sufficiently large \(T\), and a stable schedule for \(\beta_t\)
+          the last sample is an isotropic Gaussian standard normal distribution
+          \(x_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\).
+          </p>
+
+          <h4> Variance Schedule </h4>
+
+          <p class="justified">
+          The variance \(\beta\), also known as "diffusion rate", controls the inclusion
+          of noise in the data. The variance \(\beta_t\) of the process at each step \(t\) is
+          computed with a fixed schedule and adds Gaussian noise to the data in the
+          previous step \(x_t\).
+          </p>
+
+          <p class="justified">
+          Given \(x_0\) and \(t\) we can compute any \(x_t\) using the reparametrization
+          trick \(\mathbf{z} = \boldsymbol{\mu}_x + \boldsymbol{\sigma}_x\epsilon \):
+          </p>
+
+          \[
+            x_t = \sqrt{1-\beta_t}x_{t-1} + \sqrt\beta_t\mathbf{I}\epsilon.
+          \]
+
+          <p class="justified">
+          Applying this formulation allows us to genearte samples for each time
+          step iteratively: compute for \(x_1\), then for \(x_3\), then \(x_4\)
+          and so on. Yet, there is a direct way to go from \(x_0\) to any desired
+          \(t\) (e.g. \(t=0\) to \(t=4\)). To do so we apply a change of variable
+          </p>
+
+          \[
+          \alpha_t = 1-\beta_t, \ \ \ \   \text{  a cumulative until time $t$  }    \ \ \  \bar{\alpha}_t = \prod_{s=1}^t\alpha_s.
+          \]
+
+          <p class="justified">
+          Replacing and using the parametrization trick
+          </p>
+
+          \[
+          x_t = \sqrt{1-\beta_t}x_{t-1}+\sqrt\beta_t\epsilon_{t}, \ \ \text{ by replacing}\  \alpha_t \ \ x_{t}=\sqrt\alpha_t x_{t-1} + \sqrt{1-\alpha_t}\epsilon_t
+          \]
+
+          <p class="justified">
+          Applying it for the \(t-1\) step \(x_{t-1}\)
+          </p>
+
+          \[
+          x_{t-1}=\sqrt{\alpha_{t-1}}x_{t-2}+\sqrt{1-\alpha_{t-1}}\epsilon_{t-1}
+          \]
+
+
+          <p class="justified">
+          Note the step added to noise. Then, replacing \(x_{t-1}\) in the original
+          </p>
+
+          \[
+          x_{t}=\sqrt{\alpha_t\alpha_{t-1}}x_{t-2}+\underbrace{\sqrt{\alpha_t(1-\alpha_{t-1})}\epsilon_{t-1} + \sqrt{1-\alpha_t}\epsilon_t}
+          \]
+
+          <p class="justified">
+          The sub-braced terms are samples of two independent normal distributions
+          \(\mathcal{N}_1(0, \alpha_t(1-\alpha_{t-1}))\) and \(\mathcal{N}_2(0, 1-\alpha_t)\).
+          The sum of any sample of these distributions is a normal distribution with
+          parameters \(\mathcal{N}(0, \alpha_t(1-\alpha_{t-1}) + (1-\alpha_t))\)
+          giving \(\mathcal{N}(0, 1-\alpha_t\alpha_{t-1})\). Applying the reparametrization
+          trick we obtain
+          </p>
+
+          \[
+          x_{t}=\sqrt{\alpha_t\alpha_{t-1}}x_{t-2}+\sqrt{1 -\alpha_t\alpha_{t-1}}\epsilon.
+          \]
+
+          <p class="justified">
+          We apply the same for \(x_{t-2}\) and all the way down to \(t=0\) to
+          finally obtain  
+          </p>
+
+          \[
+          x_{t}=\sqrt{\bar{\alpha}_t}x_{0}+\sqrt{1-\bar\alpha_{t}}\epsilon,
+          \]
+
+          and write the diffusion kernel
+
+          \[
+          q(x_t|x_0) = \mathcal{N}(\sqrt{\bar\alpha}x_0, (1 - \bar\alpha) \mathbf I).
+          \]
+
+          <h4>Types of \(\beta_t\) scheduling </h4>
+
+          <p class="justified">
+            <strong>Linear schedule</strong>. In [2] the authors proposed to use a linear 
+            scheduling going from \(\beta_1=10^{−4}\) up to \(\beta_T=0.02\). This was per 
+            se an improvement from the original paper in 2015 [1]. However, this 
+            schedule is rather aggressive in the way that images lost information 
+            from way too early in the process. 
+          </p>
+
+          <p class="justified">
+            <strong>Cosine schedule</strong>. The paper in [3] the proposed a softer 
+            schedule that prevents the information loss too early in the forward process. 
+            They introduced a cosine schedule of the following:
+          </p>
+
+          \[
+          \beta_t=\text{clip}(1-\frac{\bar\alpha_t}{\bar\alpha_{t-1}}, 0.999) \text{where} \bar\alpha_t=f(t)/f(0) \text{and} f(t)=\cos(\frac{t/T+s}{1+s}\cdot\frac{\pi}{2})^2
+          \]
+
+          <figure style="text-align:center;">
+            <img src="linear_cosine_schedule.png" width=762px />
+            <figcaption>
+              Figure. Example of forwad diffusion process using two schedules. 
+              Top: linear schedule, Bottom: cosine schedule.
+            </figcaption>
+          </figure>
+
+          <h4>Sample python code of the forward diffusion process</h4>
+          <pre><code class="language-python">
+# Sample from forwad diffusion process given a schedule, time step, and x0.
+def forward_diffusion(x0, sqrt_alpha_cumulative, sqrt_one_minus_alpha_cumulative, timestep):
+  # x0: Tensor of shape [bs, C, H, W] containing original images.
+  # sqrt_alpha_cumulative: Tensor of shape [T], containing cumulative schedule: \sqrt{\bar\alpha}.
+  # sqrt_one_minus_alpha_cumulative: Tensor of shape [T], containing cumulative schedule \sqrt{1 - \bar\alpha}.
+  # timestep: Time step to obtain a sample from.
+  # Get random noise from a standard Gaussian distribution N(0, I)
+  epsilon = torch.randn_like(x0)
+  
+  # Now we apply the forward step using the reparametrization trick
+  # z = mean_x + \sigma_x * \epsilon
+  # x_t = \sqrt{\bar\alpha_t}*x_0 + \sqrt(1-\bar\alpha_t)*\epsilon
+  mean = sqrt_alpha_cumulative[timestep] * x0
+  std_dev = sqrt_one_minus_alpha_cumulative[timestep] 
+  sample  = mean + std_dev * epsilon
+
+  return sample, epsilon
+          </code></pre>
+
+          <h3>Reverse process</h3>
+
+          <p class="justified">
+          The reverse process is also modeled by a Markov chain. In it we attempt
+          to reconstruct the input \(x_0\) from the corrupted noised image \(x_T\).
+          For small \(\beta_t\) the reverse conditional \(q(x_{t-1}|x_t)\) is also
+          a normal distribution. 
+          </p>
 
         </section>
+
+        
 
 
         <!-- section>
@@ -249,6 +446,10 @@
     </main>
   </div>
 </body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
 </html>
 
 

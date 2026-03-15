@@ -429,4 +429,29 @@ img {
   line-height: 1.6;
 }
 
+.justified {
+  text-align: justify;
+}
+
+
+code {
+  background: #f4f4f4;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+pre {
+  background: #f4f4f4;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+
 
