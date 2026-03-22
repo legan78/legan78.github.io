@@ -349,8 +349,113 @@ def forward_diffusion(x0, sqrt_alpha_cumulative, sqrt_one_minus_alpha_cumulative
           The reverse process is also modeled by a Markov chain. In it we attempt
           to reconstruct the input \(x_0\) from the corrupted noised image \(x_T\).
           For small \(\beta_t\) the reverse conditional \(q(x_{t-1}|x_t)\) is also
-          a normal distribution. 
+          a normal distribution. Yet, estimating \(q(x_{t-1}|x_t)\) is not easy,
+          i.e. requires to use all the data. Instead, we will use a neural network
+          to approximate the conditional distribution paramters (mean and variance). 
           </p>
+
+
+          <p class="justified">
+          The reverse step stargs from the last time step in the forward diffusion
+          \(x_T\) with \(p(x_T) = \mathcal N (x_T; 0, \mathbf I)\). At each step
+          in the chain we apply a neural network parametrized by \(\theta\), on 
+          the input \(x_t\) to estimate the mean \(\boldsymbol \mu\) and covariance
+          \(\boldsymbol \Sigma\) of the distribution at step \(t\). The joint
+          distribution of the reverse process is described as:
+          </p>
+
+          \[
+          p_{\theta}(x_{0:T}) = p(x_T)\prod_{t=1}^Tp(x_{t-1}|x_t),\ \ \ \text{with potentials} \ \ p(x_{t-1}|x_t)=\mathcal{N}(x_{t-1}; \boldsymbol{\mu}(x_t, t), \boldsymbol\Sigma(x_t, t)).
+          \]
+
+          <p class="justified">
+          From the previous we can see the following 
+          <p>
+
+          <ul>
+            <li> The learning process will learn "components of the noise" </li>
+            <li> The walks from 0 to \(T\), and viceversa, are paths between the
+                 simple and complex data distributions. These paths will look "noisy"
+                 by the effect of sampling. A good example can be seen in the Figure below.</li>
+            <li> To generate an image the model has to be executed \(T\) times!</li>
+          </ul>
+          
+          <h3> Learning a diffusion model </h3>
+          <h4> The ELBO</h4>
+
+          <p class="justified">
+          We want to find the model that matches the data distribution by
+          minimizing its negative log-likelihood.
+          Let's start by defining the probability that the generative model assigns
+          to the data:
+          </p>
+
+         \[
+          -\log ( p_{\theta} (x_0) ) = -\int \log p_{\theta}(x_{0:T})dx_{1:T}
+         \] 
+
+          <p class="justified">
+          However, it is intractable to compute it given it requires to compute
+          all the marginal distributions of the steps from \(T\) down to \(0\).
+          However, note that the setting of \(q\) and \(p_{\theta}\) is similar
+          to the setting of the varational auto-encoders. Therefore, we can turn
+          into instead computing the Evidence Lower Bound (ELBO) of the model.
+          </p>
+
+          <p class="justified">
+          Instead of directly computing the likelihood of the reverse process
+          \(p_{theta}(x_0)\), we compute the relative probability 
+          (likelihood ratio)  of the forward and reverse process averaged over
+          the forward trajectories [REF]
+          </p>
+
+         \[
+          p_{\theta} (x_0) = \int p_{\theta}(x_{0:T})dx_{1:T} {\color{blue}\frac{q(x_{1:t}|x_0)}{q(x_{1:t}|x_0)} }
+         \]
+
+         \[
+        p_{\theta} (x_0) = \int q(x_{1:T}|x_0) \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)} dx_{1:T} = \mathbb{E}_{q(x_{1:T}|x_0)}\left[ \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right]
+         \]
+
+          <p class="justified">
+          From the expectation above \(\mathbb{E}_{q(x_{1:T}|x_0)}\) we can define the ELBO.
+          </p>
+
+          <p class="justified">
+          To derive the training objective we maximize the model's log-likelihood
+          over the distribution \(q\) 
+          </p>
+
+          \[
+          L = \int q(x_{0:T}) \log \mathbb{E}_{q(x_{1:T}|x_0)}\left[ \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right] dx_{0:T}
+          \]
+
+          <p class="justified">
+          We can get rid of the aweful expectation inside the integral by using
+          the Jensen's inequality. The inequality states that \({\color{blue}E[f(X)] \geq f(E[X])}\)
+          for a convex function \(f\). Then the final lower bound becomes
+          </p>
+
+          \[
+          L \geq \int q(x_{0:T}) \log \left[ \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right] dx_{0:T} \geq \mathbb{E}_{q}\left[ \log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right]
+          \]
+
+          <p class="justified">
+          which to minimize we simply multiply by \(-1\)
+          </p>
+
+          <h4>Simplification of the training loss </h4>
+
+          <p class="justified">
+          We start by replacing the definition of the distributions into the inequality 
+          </p>
+
+         \[
+          \mathbb E [-\log p_{\theta}(x_0)] \leq \mathbb E_{q}\left[-\log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right] = {\color{red}\mathbb E_{q} \left[-\log\frac{  p(x_T)\prod_{t=1}^Tp_{\theta}(x_{t-1}|x_t) }{\prod_{t=1}^Tq(x|x_{t-1}) }\right]}
+         \]
+
+          
+
 
         </section>
 
