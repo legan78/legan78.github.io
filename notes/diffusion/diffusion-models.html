@@ -37,8 +37,18 @@
           <a href="../../index.html">← Back to profile</a>
         </p>
 
-        <h1 class="note-title">Notes on Diffusion Models</h1>
-        <p class="note-meta">Angel Martínez-González · Draft notes</p>
+        <h1>Notes on Diffusion Models</h1>
+        <p class="note-meta">
+          <font size="3">
+          These are my personal notes I used to learn how diffusion model work
+          and understand their derivation and extensions to basic DDPMs.
+          The focus I use in these notes are not only to summarise, but to go in
+          detail to gain insights in the origin of the modeling choices of the
+          training loss and computational designs. While learning I also use simple
+          python code as hands on to make small experiments with the purpose of
+          learning. I hope these are in any sense useful for someone.
+          </font>
+        </p>
 
         <!-- div class="note-toc">
           <strong>Contents</strong>
@@ -50,6 +60,24 @@
             <li><a href="#sampling">5. Sampling intuition</a></li>
           </ul>
         </div -->
+
+        <h3> References </h3>
+
+        <p class="justified">
+        I used several resources to derive the content of in this page.
+        First, some of the papers that lay the ground work for the main concepts
+        defining DDPMs, stable diffusion and classifier free guidance.
+        <p>
+
+        <ol>
+          <li id="thermo"> <a href=https://arxiv.org/pdf/1503.03585>Sohl-Dickstein et al., 2015 - Deep Unsupervised Learning using Nonequilibrium Thermodynamics</a></li>
+          <li id="ddpm"><a href="https://arxiv.org/pdf/2006.11239">Ho et al., 2020 — Denoising Diffusion Probabilistic Models</a></li>
+          <li id="iddpm"><a href="https://arxiv.org/pdf/1503.03585">Nichol et al., 2021 - Improved Denoised Diffusion Probabilistic Models</a></li>
+          <li id="CG"><a href="https://arxiv.org/abs/2105.05233">Dhariwal et al., 2021 - Diffusion models beat gans on image synthesis</a></li>
+          <li id="CFG"><a href="https://arxiv.org/abs/2207.12598">Ho et al., 2021 - Classifier-free diffusion guidance</a></li>
+          <li id="SD"><a href="https://arxiv.org/abs/2112.10752"> Rombach et al., 2021 - High-Resolution Image Synthesis with Latent Diffusion Models</a></li>
+        </ol>
+
 
         <section id="overview" class="note-section">
           <h2>1. Introduction</h2>
@@ -297,15 +325,15 @@
           <h4>Types of \(\beta_t\) scheduling </h4>
 
           <p class="justified">
-            <strong>Linear schedule</strong>. In [2] the authors proposed to use a linear 
+            <strong>Linear schedule</strong>. In <a href="#ddpm">[2]</a> the authors proposed to use a linear 
             scheduling going from \(\beta_1=10^{−4}\) up to \(\beta_T=0.02\). This was per 
-            se an improvement from the original paper in 2015 [1]. However, this 
+            se an improvement from the original paper in 2015 <a href="#thermo">[1]</a>. However, this 
             schedule is rather aggressive in the way that images lost information 
             from way too early in the process. 
           </p>
 
           <p class="justified">
-            <strong>Cosine schedule</strong>. The paper in [3] the proposed a softer 
+            <strong>Cosine schedule</strong>. The paper in <a href="#iddpm">[3]</a> the proposed a softer 
             schedule that prevents the information loss too early in the forward process. 
             They introduced a cosine schedule of the following:
           </p>
@@ -470,7 +498,7 @@ def forward_diffusion(x0, sqrt_alpha_cumulative, sqrt_one_minus_alpha_cumulative
         To properly learn, distributions should have similar notation on \(x_{t-1}\).
         We can apply the Bayes rule to the summation, replacing 
         \(q(x_t|x_{t-1}) = q(x_t)q(x_{t-1}|x_t)/q(x_{t-1})\).
-        Additionally, notice that this term itself has a lot of variance [1].
+        Additionally, notice that this term itself has a lot of variance <a href="#thermo">[1]</a>.
         Conditioning this ratio on the original data \(x_0\)  will reduce such variance: 
         </p>
 
@@ -550,7 +578,7 @@ def forward_diffusion(x0, sqrt_alpha_cumulative, sqrt_one_minus_alpha_cumulative
           <li> \(\mathbf{p_{\theta}(x_{t-1}|x_t)}\) The reverse process that 
           involves predicting the parameters of a Normal distribution 
           \(\mu_{\theta}\) and \(\Sigma_{\theta}\)  at each time step. 
-          However, in [2] the variances are set to the known variance schedule 
+          However, in <a href="#ddpm">[2]</a> the variances are set to the known variance schedule 
           and thefore the potentials are approximated with 
           \(p_{\theta}(x_{t-1}|x_t) = {\color{purple}\mathcal{N}(x_{t-1}; \boldsymbol{\mu}_{\theta}(x_t, t), \beta_t\mathbf I)}\) 
           . Therefore, we are only left to estimate \(\boldsymbol{\mu}_{\theta}\). </li>
@@ -571,7 +599,7 @@ def forward_diffusion(x0, sqrt_alpha_cumulative, sqrt_one_minus_alpha_cumulative
         <p class="justified">
         Now apply the definition of the Gaussian. This derivation is reeeeaaally long. 
         Therefore we are going to omit the derivation and keep only the final 
-        expressions provided in [2]
+        expressions provided in <a href="#ddpm">[2]</a>
         </p>
 
         \[
