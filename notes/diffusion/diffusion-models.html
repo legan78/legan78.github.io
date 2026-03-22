@@ -454,7 +454,219 @@ def forward_diffusion(x0, sqrt_alpha_cumulative, sqrt_one_minus_alpha_cumulative
           \mathbb E [-\log p_{\theta}(x_0)] \leq \mathbb E_{q}\left[-\log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right] = {\color{red}\mathbb E_{q} \left[-\log\frac{  p(x_T)\prod_{t=1}^Tp_{\theta}(x_{t-1}|x_t) }{\prod_{t=1}^Tq(x|x_{t-1}) }\right]}
          \]
 
+        \[
+        = \mathbb{E}_{q}\left[ -\log p(x_T) - \sum_{t\ge 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_t|x_{t-1})}\right]
+        \]
           
+        <p class="justified">
+         Now we split the summation in 2 terms
+        </p>
+
+        \[
+        = \mathbb{E}_{q}\left[ -\log p(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_t|x_{t-1})} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right]
+        \]
+
+        <p class="justified">
+        To properly learn, distributions should have similar notation on \(x_{t-1}\).
+        We can apply the Bayes rule to the summation, replacing 
+        \(q(x_t|x_{t-1}) = q(x_t)q(x_{t-1}|x_t)/q(x_{t-1})\).
+        Additionally, notice that this term itself has a lot of variance [1].
+        Conditioning this ratio on the original data \(x_0\)  will reduce such variance: 
+        </p>
+
+        \[
+        q(x_t|x_{t-1}) = q(x_t|x_0)q(x_{t-1}|x_t,x_0)/q(x_{t-1}|x_0)
+        \]
+
+        \[
+        = \mathbb{E}_{q}\left[ -\log p_{\theta}(x_T) - {\color{blue}\sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}\cdot\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right]
+        \]
+
+        \[
+        = \mathbb{E}_{q}\left[ -\log p_{\theta}(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}-\sum_{t>1}\log\underbrace{\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right]
+        \]
+
+        <p class="justified">
+        The underbraced term can be expressed as follows, where the terms in red are eliminated (index run shifted by 1)
+        </p>
+
+        \[
+        \sum_{t>1}\log\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \log\prod_{t>1}\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \frac{q(x_{1}|x_0){\color{red}q(x_{2}|x_0)...q(x_{T-1}|x_0)}}{{\color{red}q(x_{2}|x_0)...q(x_{T-1}|x_0)}q(x_T|x_0)}=\log\frac{q(x_1|x_0)}{q(x_T|x_0)}
+        \]
+
+        <p class="justified">
+        to land to a more efficient form of training the model          
+        </p>
+
+       \[
+        - \log\frac{q(x_1|x_0)}{q(x_T|x_0)} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)} = \log q(x_T|x_0)-\log p_{\theta}(x_0|x_1)
+        \]
+
+        <p class="justified">
+        Bringing these terms back into the objective we have
+        </p>
+
+        \[
+        = \mathbb{E}_{q}[ -\log p(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)} +\log q(x_T|x_0)-\log p_{\theta}(x_0|x_1)
+        \]
+
+        <p class="justified">
+        Bringing these terms back into the objective we have
+        </p>
+
+        \[
+        = \mathbb{E}_{q}\left[ -\log p(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)} +\log q(x_T|x_0)-\log p_{\theta}(x_0|x_1) \right]
+        \]
+
+
+        \[
+         = \mathbb{E}_{q}\left[ -{\color{purple}\log \frac{ p(x_T)}{q(x_T|x_0)}} - \sum_{t> 1}{\color{blue} \log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}} -\log p_{\theta}(x_0|x_1)\right]
+        \]
+
+
+        <p class="justified">
+        The coloured terms can be expressed as KL divergences
+        </p>
+
+        \[
+         = \mathbb{E}_{q}\left[ \underbrace{{\color{purple}D_{KL}(q(x_T|x_0) || p(x_T))}}_{L_T} + \sum_{t> 1}\underbrace{{\color{blue} D_{KL}( q(x_{t-1}|x_t,x_0) || p_{\theta}(x_{t-1}| x_t)}}_{L_{t-1}} -\underbrace{\log p_{\theta}(x_0|x_1)}_{L_0} \right]
+        \]
+
+        <p class="justified">
+        Recall that the final latent in the diffusion process is a Normal 
+        isotropic Gaussian distribution. Therefore, there are no learnable 
+        parameters in for \(L_T\). Since the variance schedule in the forward 
+        process is also constant we can completely ignore this term
+        (We will also ignore \(L_0\).
+        </p>
+
+        <h3>Putting things together </h3>
+
+        <p class="justified">
+        We have a learning process involving two distributions
+        </p>
+
+        <ul>
+          <li> \(\mathbf{p_{\theta}(x_{t-1}|x_t)}\) The reverse process that 
+          involves predicting the parameters of a Normal distribution 
+          \(\mu_{\theta}\) and \(\Sigma_{\theta}\)  at each time step. 
+          However, in [2] the variances are set to the known variance schedule 
+          and thefore the potentials are approximated with 
+          \(p_{\theta}(x_{t-1}|x_t) = {\color{purple}\mathcal{N}(x_{t-1}; \boldsymbol{\mu}_{\theta}(x_t, t), \beta_t\mathbf I)}\) 
+          . Therefore, we are only left to estimate \(\boldsymbol{\mu}_{\theta}\). </li>
+
+          <li>\(\mathbf{q(x_t| x_{t-1})}\) The forward process potentials. Here 
+          we have found that they are tractable and we reduce the variance when 
+          conditioning on \(x_0\). Writing such conditioned potentials we have
+          \(q(x_{t-1}|x_t,x_0)={\color{green}\mathcal{N}(x_{t-1}; \tilde{\boldsymbol{\mu}}(x_t, x_0), \tilde\beta_t\mathbf I)}\).
+          Deriving \(\tilde{\boldsymbol{\mu}}\) and \(\tilde\beta\) requires to write 
+          the potentials using the Bayes rule </li>
+        </ul>
+
+        \[
+        q(x_{t-1}|x_t,x_0) = q(x_t|x_{t-1},x_0)\frac{ q(x_{t-1}|x_0)}{q(x_t|x_{0})}
+        \]
+
+
+        <p class="justified">
+        Now apply the definition of the Gaussian. This derivation is reeeeaaally long. 
+        Therefore we are going to omit the derivation and keep only the final 
+        expressions provided in [2]
+        </p>
+
+        \[
+        \tilde{\boldsymbol\mu_t}(x_t, x_0) = \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t}x_0 + \frac{\sqrt\alpha(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}x_t\ \ \ \text{and} \ \ \tilde\beta_t=\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\beta_t
+        \]
+
+        <p class="justified">
+        We can simplify by plugging the definition of \(x_0\) in closed form derived from
+        \(x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon\)
+        </p>
+
+        \[
+          \tilde{\boldsymbol\mu_t}(x_t, x_0) = \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t} \cdot \frac{1}{\sqrt{\bar\alpha_t}}(x_t - \sqrt{1-\bar\alpha_t})\epsilon + \frac{\sqrt\alpha(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}x_t
+        \]
+
+        \[
+        {\color{red}\tilde{\boldsymbol\mu_t}(x_t, x_0)=\frac{1}{\sqrt{\bar\alpha_t}}(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon)}
+        \]
+
+        <p class="justified">
+        We can now plug these definitions into \(L_{t-1}\) and use the definition 
+        of the Gaussian likelihood o derive (apply exp which cancels with log 
+        and get rid of terms without \(\mu_{\theta}\  \text{and} \ \tilde\mu\) 
+        to a C constant)
+        </p>
+
+        \[
+          L_{t-1}=\mathbb{E}_q\left[\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}\right] = \mathbb{E}_q\left[\log\frac{\mathcal{N}(x_{t-1}; \boldsymbol\mu_{\theta}(x_t, t), \sigma_t^2\mathbf I)}{\mathcal{N}(x_{t-1}; \tilde{\boldsymbol\mu}(x_t, x_0), \sigma^2_t\mathbf I)}\right] = \mathbb{E}_q\left[ \frac{1}{2\sigma_t^2}||{\color{red}\tilde{\boldsymbol\mu}(x_t, x_0)}- \boldsymbol\mu_{\theta}(x_t, t) ||^2 \right]+C
+        \]
+
+        \[
+        L_{t-1} = \mathbb{E}_q\left[\frac{1}{2\sigma_t^2}|| {\color{red}\frac{1}{\sqrt{\bar\alpha_t}}{(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon)}} - \boldsymbol\mu_{\theta}(x_t, t) ||^2\right]
+        \]
+
+        <p class="justified">
+        We can make the following points
+        </p>
+
+
+        <ul>
+          <li> This solution let us know that the model should predict the 
+          posterior of the forward process \(\tilde{\boldsymbol\mu}\). This means
+          that The neural network would also need to predict \(x_t\)!
+          </li>
+          <li> However, note that \(x_t\) is an input to the estimator of the 
+          mean, that is available during training time. Would this mean that we
+          should learn an identity function + noise?
+          </li>
+        </ul>
+
+        <p class="justified">
+        We can parametrize the previous by instead attempting to predict the 
+        noise \(\epsilon\) from \(x_t\)
+        </p>
+
+        \[
+        \boldsymbol\mu_{\theta}(x_t, t)= \frac{1}{\sqrt{\bar\alpha_t}}{(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}{\color{blue}\epsilon_{\theta}(x_t, t))}} 
+        \]
+
+
+        \[
+        L_{t-1} = \mathbb{E}_q\left[\frac{1}{2\sigma_t^2}|| {\color{red}\frac{1}{\sqrt{\bar\alpha_t}}{(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon)}} - \frac{1}{\sqrt{\bar\alpha_t}}{(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}{\color{blue}\epsilon_{\theta}(x_t, t))}} ||^2\right] = \mathbb{E}_q\left[K^2|| ({\color{red}\epsilon}-{\color{blue}\epsilon_{\theta}(x_t, t)}) ||^2\right]
+        \]
+
+        <p class="justified">
+        Where \(K= (1-\alpha_t)/ (\sigma_t\sqrt2\sqrt{\bar\alpha_t(1-\bar\alpha_t}))\).
+        </p>
+
+        </h3>Final training loss </h3>
+
+        <p class="justified">
+        The authors have found that removing the scaling factor \(K\)
+        is benificial for sample quality. Leaving the loss function to be 
+        (using the re-parametrization trick)
+        </p>
+
+        \[
+        \mathbb{E}_{t,x_0,\epsilon} \left[|| ({\color{red}\epsilon}-{\color{blue}\epsilon_{\theta}(x_t, t)}) ||^2] = \mathbb{E}_{t,x_0,\epsilon}[|| ({\color{red}\epsilon}-{\color{blue}\epsilon_{\theta}(\sqrt{\bar\alpha}_tx_0+\sqrt{1+\bar\alpha_t}{\red\epsilon}, t)}) ||^2\right].
+        \]
+
+
+        <h3> Implementation details</h3>  
+
+          <h4>Training algorithm </h4>
+          <figure style="text-align:center;">
+            <img src="diffusion_training_algo.png" width=512px />
+            <figcaption>
+            </figcaption>
+          </figure>
+          <h4>Architecture of predictor </h4>
+          <figure style="text-align:center;">
+            <img src="unet_diffusion_arch.png" width=762px />
+            <figcaption>
+            </figcaption>
+          </figure>
 
 
         </section>
