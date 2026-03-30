@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,8 +29,145 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 
+  <style>
+    body {
+      margin: 0;
+      background: #eff3f9;
+      font-family: 'Lato', sans-serif;
+    }
+
+    .hero-image {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      line-height: 0;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .site-container.note-page-container {
+      max-width: 100%;
+      padding: 0 0 48px 0;
+    }
+
+    .note-main {
+      display: flex;
+      justify-content: center;
+      padding: 36px 20px 0 20px;
+    }
+
+    .section-card.note-card {
+      width: 100%;
+      max-width: 820px;
+      background: #ffffff;
+      border-radius: 4px;
+      padding: 40px 48px;
+      box-sizing: border-box;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .justified {
+      text-align: justify;
+    }
+
+    figure {
+      margin: 28px 0;
+    }
+
+    figure img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .note-back a {
+      text-decoration: none;
+    }
+
+    ol li,
+    ul li {
+      margin-bottom: 8px;
+    }
+
+    blockquote {
+      border-left: 4px solid #b0b0b0;
+      margin: 20px 0;
+      padding: 8px 18px;
+      background: #f7f7f7;
+    }
+
+    @media (max-width: 900px) {
+      .section-card.note-card {
+        max-width: 92%;
+        padding: 28px 22px;
+      }
+
+      .hero-image img {
+        height: 220px;
+      }
+    }
+
+
+
+.code-row {
+  display: flex;
+  gap: 5px;
+  margin: 5px 0;
+  align-items: flex-start;
+  align-items: stretch;
+}
+
+.code-block {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-block pre {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  box-sizing: border-box;
+  white-space: pre;
+  flex: 1;
+  padding: 5px;
+}
+
+
+.code-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  padding: 6px 10px;
+  background: #f0f0f0;
+  border-left: 4px solid steelblue;
+}
+
+pre, code {
+  font-size: 0.5rem;
+}
+
+
+    @media (max-width: 300px) {
+      .code-row {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
+
+  <div class="hero-image">
+    <img src="osaka_anmg.jpg" alt="Diffusion models banner image" />
+  </div>
+
   <div class="site-container note-page-container">
     <main class="note-main">
       <div class="section-card note-card">
@@ -37,20 +175,21 @@
           <a href="../../index.html">← Back to profile</a>
         </p>
 
-        <h1>Notes on Diffusion Models</h1>
+        <h1>Basics on Diffusion Models</h1>
         <p class="justified">
           <font size="3">
-          These are my personal notes on diffusion models, created while learning
-          how they work, their derivation, and extensions beyond basic DDPMs. 
-          The goal is not just to summarize the material, but to go deeper and 
-          build intuition about the design choices behind the training objectives 
-          and model architectures. Along the way, I also use simple Python 
-          experiments to reinforce understanding through hands-on practice. 
-          I hope these notes are helpful in some way to others.
+            These are my personal notes on diffusion models, created while learning
+            how they work, their derivation, and extensions beyond basic DDPMs.
+            The goal is not just to summarize the material, but to go deeper and
+            build intuition about the design choices behind the training objectives
+            and model architectures. Along the way, I also use simple Python
+            experiments to reinforce understanding through hands-on practice.
+            I hope these notes are helpful to others in some way.
           </font>
         </p>
 
-        <!-- div class="note-toc">
+        <!--
+        <div class="note-toc">
           <strong>Contents</strong>
           <ul>
             <li><a href="#overview">1. Introduction</a></li>
@@ -59,177 +198,170 @@
             <li><a href="#training-objective">4. Training objective</a></li>
             <li><a href="#sampling">5. Sampling intuition</a></li>
           </ul>
-        </div -->
+        </div>
+        -->
 
-        <h3> References </h3>
+        <h3>References</h3>
 
         <p class="justified">
-        I used several resources to derive the content of in this page.
-        First, some of the papers that lay the ground work for the main concepts
-        defining DDPMs, stable diffusion and classifier free guidance.
-        <p>
+          I used several resources to derive the content of this page.
+          First, I include some of the papers that lay the groundwork for the main concepts
+          behind DDPMs, Stable Diffusion, and classifier-free guidance.
+        </p>
 
         <ol>
-          <li id="thermo"> <a href=https://arxiv.org/pdf/1503.03585>Sohl-Dickstein et al., 2015 - Deep Unsupervised Learning using Nonequilibrium Thermodynamics</a></li>
+          <li id="thermo"><a href="https://arxiv.org/pdf/1503.03585">Sohl-Dickstein et al., 2015 — Deep Unsupervised Learning using Nonequilibrium Thermodynamics</a></li>
           <li id="ddpm"><a href="https://arxiv.org/pdf/2006.11239">Ho et al., 2020 — Denoising Diffusion Probabilistic Models</a></li>
-          <li id="iddpm"><a href="https://arxiv.org/pdf/1503.03585">Nichol et al., 2021 - Improved Denoised Diffusion Probabilistic Models</a></li>
-          <li id="CG"><a href="https://arxiv.org/abs/2105.05233">Dhariwal et al., 2021 - Diffusion models beat gans on image synthesis</a></li>
-          <li id="CFG"><a href="https://arxiv.org/abs/2207.12598">Ho et al., 2021 - Classifier-free diffusion guidance</a></li>
-          <li id="SD"><a href="https://arxiv.org/abs/2112.10752"> Rombach et al., 2021 - High-Resolution Image Synthesis with Latent Diffusion Models</a></li>
+          <li id="iddpm"><a href="https://arxiv.org/abs/2102.09672">Nichol et al., 2021 — Improved Denoising Diffusion Probabilistic Models</a></li>
+          <li id="ddim"><a href="https://arxiv.org/pdf/2010.02502">Song et al., 2020 — Denoising Diffusion Implicit Models</a></li>
+          <li id="CG"><a href="https://arxiv.org/abs/2105.05233">Dhariwal et al., 2021 — Diffusion Models Beat GANs on Image Synthesis</a></li>
+          <li id="CFG"><a href="https://arxiv.org/abs/2207.12598">Ho et al., 2022 — Classifier-Free Diffusion Guidance</a></li>
+          <li id="SD"><a href="https://arxiv.org/abs/2112.10752">Rombach et al., 2022 — High-Resolution Image Synthesis with Latent Diffusion Models</a></li>
+          <li id="sde"><a href="https://arxiv.org/pdf/2011.13456">Song et al., 2021 — Score-Based Generative Modeling through Stochastic Differential Equations</a></li>
         </ol>
-
 
         <section id="overview" class="note-section">
           <h2>1. Introduction</h2>
           <p class="justified">
-           Diffusion models are a class of generative models inspired by the
-           idea in Non-Equilibrium Statistical Physics, which states:
+            Diffusion models are a class of generative models inspired by an idea
+            from non-equilibrium statistical physics, which states:
           </p>
 
           <blockquote>
-          <strong> 
-            We can gradually convert one distribution into another using a Markov chain
-          </strong>
+            <strong>
+              We can gradually convert one distribution into another using a Markov chain.
+            </strong>
           </blockquote>
 
           <p class="justified">
-          The essential idea is to first systematically and gradually destroy the 
-          structure of the data distrubution by a diffusion process. Then, learn
-          a model for the reverse process to restore the data. This two step yield
-          a high flexible generative model for the data with the following advantages:
-          1) it is easy to sample from the learned distribution, 2) the data
-          becomes "explainable" given the learned distribution is simpler than the
-          original, and 3) samples become more diverse as it is easier to avoid
-          the "collapsing mode effect" observed in GANs. Here in we will discuss
-          diffusion models focused on image generation.
+            The essential idea is to first systematically and gradually destroy the
+            structure of the data distribution through a diffusion process. Then, we learn
+            a model for the reverse process to restore the data. This two-step procedure
+            yields a highly flexible generative model with the following advantages:
+            1) it is easy to sample from the learned distribution,
+            2) the data becomes more “explainable” because the learned distribution is simpler than the original one,
+            and 3) samples become more diverse since it is easier to avoid the “mode collapse” effect observed in GANs.
+            Here, we will discuss diffusion models with a focus on image generation.
           </p>
-
         </section>
 
         <section id="forward-process" class="note-section">
-          <h2>2. An Overview to the Diffusion Process</h2>
+          <h2>2. An Overview of the Diffusion Process</h2>
 
           <p class="justified">
-          Diffusion generative modelling framework comprises two steps: 1) a forward
-          diffusion process iteratively injects noise to the image, and 2) a reverse
-          diffusion process iteratively denoises the image back to the
-          original data.
-          While the first step can be easily achieved, the second step requires 
-          a model to learn to denoise the image into a meaningful sample in the 
-          original distribution.
-          </p>
-          
-          <h3> Forward diffusion process</h3>
-
-          <p class="justified">
-          The goal in the forward process is to convert a complex distribution to 
-          a distribution that is tractable and easier to draw samples from, 
-          while achieving some level of "explainability". 
+            The diffusion generative modeling framework comprises two steps:
+            1) a forward diffusion process iteratively injects noise into the image, and
+            2) a reverse diffusion process iteratively denoises the image back to the
+            original data.
+            While the first step can be easily defined, the second step requires
+            a model to learn how to denoise the image into a meaningful sample from the
+            original distribution.
           </p>
 
+          <h3>Forward diffusion process</h3>
+
           <p class="justified">
-          The forward process starts by slowly and iteratively add random noise to corrupt
-          the image. The goal is to "move" away from its original and complex distribution. 
-          Noise is iteratively injected into the image following a schedule that controls
-          the "amount" of noise to add at each step. 
-          After adding noise to the image for \(T\) steps it leads the image to be 
-          unrecognizable and belonging to a different distribution, e.g. images of cats
-          will belong to an isotropic Gaussian after iteratively adding Gaussian noise.
+            The goal of the forward process is to convert a complex distribution into
+            a distribution that is tractable and easier to sample from,
+            while achieving some level of “explainability”.
+          </p>
+
+          <p class="justified">
+            The forward process starts by slowly and iteratively adding random noise to corrupt
+            the image. The goal is to move away from its original and complex distribution.
+            Noise is iteratively injected into the image following a schedule that controls
+            the amount of noise added at each step.
+            After adding noise to the image for \(T\) steps, the image becomes
+            unrecognizable and belongs to a different distribution. For example, images of cats
+            will eventually belong to an isotropic Gaussian after iteratively adding Gaussian noise.
           </p>
 
           <figure style="text-align:center;">
-            <img src="forward_process.png" width=762px />
+            <img src="forward_process.png" width="762" alt="Forward diffusion process" />
             <figcaption>
-            Figure. Starting from a clean image, the forward process gradually adds noise
-            until it becomes unrecognizable after \(T\) steps.
+              Figure. Starting from a clean image, the forward process gradually adds noise
+              until it becomes unrecognizable after \(T\) steps.
             </figcaption>
           </figure>
 
-          <!-- p class="justified">
-          Ideally the image is transformed into a distribution that is easy to 
-          sample, e.g. we transform the distribution of images with cats to an
-          isotropic gaussian distribution.
-          </p -->
-
           <figure style="text-align:center;">
-            <img src="data_distribution.png" width=762px />
+            <img src="data_distribution.png" width="762" alt="Data distribution transformation" />
             <figcaption>
               Figure. A complex data distribution is transformed into a less complex
               and tractable distribution that is easier to sample from.
             </figcaption>
           </figure>
 
-          <h3> Reverse diffusion process </h3>
+          <h3>Reverse diffusion process</h3>
 
           <p class="justified">
-          The goal in the reverse diffusion process is to recover the original 
-          image distribution from the less complex
-          and more tractable data distribution. This is achieved by iteratively
-          applying a denoising model to the input corrupted image. At each step 
-          \(t\) (in reverse) the model predicts the denoised image \(x_{t-1}\) from 
-          input \(x_t\).
+            The goal of the reverse diffusion process is to recover the original
+            image distribution from the less complex
+            and more tractable data distribution. This is achieved by iteratively
+            applying a denoising model to the corrupted input image. At each step
+            \(t\) (in reverse), the model predicts the denoised image \(x_{t-1}\) from
+            input \(x_t\).
           </p>
 
           <figure style="text-align:center;">
-            <img src="unet_cat.png" width=512px />
+            <img src="unet_cat.png" width="512" alt="Reverse denoising model" />
             <figcaption>
-              Figure. A denoising model is iteratively applied to the corrupted data to 
+              Figure. A denoising model is iteratively applied to corrupted data to
               recover the original data.
             </figcaption>
           </figure>
 
           <p class="justified">
-          <strong> Why do we need to iteratively denoise the data? Why not going directly
-          from noise to true data sample in a single step? </strong> Short answer:
-          predicting these "small perturbations" is more tractable than attempting
-          to describe the full data in a single step. Think about going back from
-          one subspace to another following the traces of your original path.
+            <strong>Why do we need to iteratively denoise the data? Why not go directly
+            from noise to a true data sample in a single step?</strong>
+            Predicting these small perturbations is more tractable than attempting
+            to describe the full data distribution in a single step. Think of it as
+            going back from one subspace to another by following the traces of the original path.
           </p>
-
         </section>
 
         <section id="formality" class="note-section">
-          <h2>3. Some "formality"</h2>
+          <h2>3. Some Formality</h2>
 
           <figure style="text-align:center;">
-            <img src="markov_chain.png" width=762px />
+            <img src="markov_chain.png" width="762" alt="Markov chain for diffusion" />
             <figcaption>
-              Figure. Markov process of forward \(q(x_t|x_{t-1})\) and reverse 
+              Figure. Markov process of forward \(q(x_t|x_{t-1})\) and reverse
               \(p_{\theta}(x_{t-1}|x_{t})\) diffusion.
             </figcaption>
           </figure>
-          
+
           <p class="justified">
-          In a diffusion process, both fowrward and backward steps are modeled by
-          a Markov process. The forward process, defined by the transitions \(q(x_t|x_{t-1})\),
-          is modeled by a Markov chain that gradually adds Gaussian noise according
-          to a fixed variance schedule. The reverse process \(p_{\theta} (x_{t-1}|x_t)\)
-          is also a Markov chain with learned distribution parameters \(\theta\) that
-          iteratively denoises the image.
+            In a diffusion process, both forward and backward steps are modeled by
+            a Markov process. The forward process, defined by the transitions \(q(x_t|x_{t-1})\),
+            is modeled by a Markov chain that gradually adds Gaussian noise according
+            to a fixed variance schedule. The reverse process \(p_{\theta}(x_{t-1}|x_t)\)
+            is also a Markov chain with learned distribution parameters \(\theta\) that
+            iteratively denoise the image.
           </p>
 
-          <h3> Forward process </h3>
+          <h3>Forward process</h3>
 
           <figure style="text-align:center;">
-          <img src="forward_formal.png" width=762px />
+            <img src="forward_formal.png" width="762" alt="Formal forward process" />
             <figcaption>
               Figure. Forward process adding noise to data according to a Gaussian noise schedule.
             </figcaption>
           </figure>
 
           <p class="justified">
-          The forward process is modeled by a Markov chain that corrupts the
-          input data with Gaussian noise according to a fixed variance schedule 
-          parametrized with \(\beta \in [0,1]\).
-          The probability distribution of the forward diffusion process is given by:
+            The forward process is modeled by a Markov chain that corrupts the
+            input data with Gaussian noise according to a fixed variance schedule
+            parameterized by \(\beta \in [0,1]\).
+            The probability distribution of the forward diffusion process is given by:
           </p>
 
           \[
-          q(x_{1:T}|x_0) = \prod_{t=1}^Tq(x|x_{t-1}),
+          q(x_{1:T}|x_0) = \prod_{t=1}^T q(x_t|x_{t-1}),
           \]
 
           <p class="justified">
-          where transition potentials are modeled by a Gaussian kernel:
+            where transition potentials are modeled by a Gaussian kernel:
           </p>
 
           \[
@@ -237,605 +369,952 @@
           \]
 
           <p class="justified">
-          Given a sufficiently large \(T\), and a stable schedule for \(\beta_t\),
-          the sample at step \(T\) belongs to an isotropic standard 
-          normal distribution \(x_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\).
+            Given a sufficiently large \(T\), and a stable schedule for \(\beta_t\),
+            the sample at step \(T\) belongs to an isotropic standard
+            normal distribution \(x_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\).
           </p>
 
-          <h4> Variance Schedule </h4>
+          <h4>Variance schedule</h4>
 
           <p class="justified">
-          The variance \(\beta\), also known as "diffusion rate", controls the injection
-          of noise in the image. The variance \(\beta_t\) of the process at each step \(t\) is
-          computed using a fixed schedule and it is used to add Gaussian noise to 
-          the image from the previous step \(x_{t-1}\).
+            The variance \(\beta\), also known as the “diffusion rate”, controls the injection
+            of noise into the image. The variance \(\beta_t\) of the process at each step \(t\) is
+            computed using a fixed schedule and is used to add Gaussian noise to
+            the image from the previous step \(x_{t-1}\).
           </p>
 
           <p class="justified">
-          Given the original image \(x_0\) and given iteration step \(t\), we can 
-          compute any \(x_t\) directly by using the reparametrization
-          trick \(\mathbf{z} = \boldsymbol{\mu}_x + \boldsymbol{\sigma}_x\epsilon \)
-          we define:
+            Given the original image \(x_0\) and a diffusion step \(t\), we can
+            compute any \(x_t\) directly by using the reparameterization
+            trick \(\mathbf{z} = \boldsymbol{\mu}_x + \boldsymbol{\sigma}_x\epsilon\).
+            We define:
           </p>
 
           \[
-            x_t = \sqrt{1-\beta_t}x_{t-1} + \sqrt\beta_t\mathbf{I}\epsilon,
+            x_t = \sqrt{1-\beta_t}x_{t-1} + \sqrt{\beta_t}\mathbf{I}\epsilon,
           \]
 
           <p class="justified">
-          where \(\beta_t\) is the variance computed at step \(t\) and 
-          \(\epsilon\sim \mathcal{U}(0,1)\). 
-          Applying this formulation iteratively will generate samples at each step:
-          using the previous as input compute for \(x_1\), then for \(x_2\), then \(x_3\) ...
+            where \(\beta_t\) is the variance computed at step \(t\) and
+            \(\epsilon \sim \mathcal{N}(0,1)\).
+            Applying this formulation iteratively generates samples at each step:
+            first for \(x_1\), then for \(x_2\), then \(x_3\), and so on.
           </p>
 
           <p class="justified">
-          To obtain a more efficient way to directly go from \(x_0\) to any desired
-          \(x_t\) (e.g. \(t=0\) to \(t=4\)) we first first need to apply a change of variable:
+            To obtain a more efficient way to go directly from \(x_0\) to any desired
+            \(x_t\) (for example, from \(t=0\) to \(t=4\)), we first apply a change of variables:
           </p>
 
           \[
-          \alpha_t = 1-\beta_t, \ \ \ \   \text{  and a cumulative until time $t$  }    \ \ \  \bar{\alpha}_t = \prod_{s=1}^t\alpha_s.
+          \alpha_t = 1-\beta_t, \qquad \text{and} \qquad \bar{\alpha}_t = \prod_{s=1}^t \alpha_s.
           \]
 
           <p class="justified">
-          Using the definition of \(\alpha_t\) we obtain:
+            Using the definition of \(\alpha_t\), we obtain:
           </p>
 
-          <!--
           \[
-          x_t = \sqrt{1-\beta_t}x_{t-1}+\sqrt\beta_t\epsilon_{t}, \ \ \text{ by replacing}\  \alpha_t \ \ x_{t}=\sqrt\alpha_t x_{t-1} + \sqrt{1-\alpha_t}\epsilon_t
-          \]
-          -->
-          \[
-          x_t = \sqrt\alpha_t x_{t-1} + \sqrt{1-\alpha_t}\epsilon_t.
+          x_t = \sqrt{\alpha_t} x_{t-1} + \sqrt{1-\alpha_t}\epsilon_t.
           \]
 
           <p class="justified">
-          To iteratively going down to \(0\) from \(t\) we need to compute the 
-          recurrence for the previous steps \(t-1, t-2, etc\) and substitute them to
-          expand the recurrence.
-          E.g. for \(x_{t-1} = \sqrt{\alpha_{t-1}}x_{t-2}+\sqrt{1-\alpha_{t-1}}\epsilon_{t-1} \)
-          we use it at step \(x_{t}\):
+            To iteratively go down to \(0\) from \(t\), we need to compute the
+            recurrence for the previous steps \(t-1, t-2,\) etc., and substitute them to
+            expand the recurrence.
+            For example, for \(x_{t-1} = \sqrt{\alpha_{t-1}}x_{t-2}+\sqrt{1-\alpha_{t-1}}\epsilon_{t-1}\),
+            we use it in the expression for \(x_t\):
           </p>
 
           \[
-          x_{t}=\sqrt{\alpha_t\alpha_{t-1}}x_{t-2}+\underbrace{\sqrt{\alpha_t(1-\alpha_{t-1})}\epsilon_{t-1} + \sqrt{1-\alpha_t}\epsilon_t}.
+          x_t=\sqrt{\alpha_t\alpha_{t-1}}x_{t-2}+\underbrace{\sqrt{\alpha_t(1-\alpha_{t-1})}\epsilon_{t-1} + \sqrt{1-\alpha_t}\epsilon_t}.
           \]
 
           <p class="justified">
-          The sub-braced terms in the previous are samples of two independent normal distributions
-          \(\mathcal{N}_1(0, \alpha_t(1-\alpha_{t-1}))\) and \(\mathcal{N}_2(0, 1-\alpha_t)\).
-          The sum of any sample of these distributions is a normal distribution with
-          parameters \(\mathcal{N}(0, \alpha_t(1-\alpha_{t-1}) + (1-\alpha_t))\)
-          resulting in the normal distribution \(\mathcal{N}_u(0, 1-\alpha_t\alpha_{t-1})\). 
-          We can compute a sample from \(\mathcal{N}_u\) using the reparametrization trick
-          and use it in the recurrence:
+            The underbraced terms above are samples from two independent normal distributions
+            \(\mathcal{N}_1(0, \alpha_t(1-\alpha_{t-1}))\) and \(\mathcal{N}_2(0, 1-\alpha_t)\).
+            The sum of samples from these distributions is also Gaussian, with
+            parameters \(\mathcal{N}(0, \alpha_t(1-\alpha_{t-1}) + (1-\alpha_t))\),
+            which simplifies to \(\mathcal{N}(0, 1-\alpha_t\alpha_{t-1})\).
+            We can therefore sample from this combined distribution using the reparameterization trick
+            and use it in the recurrence:
           </p>
 
           \[
-          x_{t}=\sqrt{\alpha_t\alpha_{t-1}}x_{t-2}+\sqrt{1 -\alpha_t\alpha_{t-1}}\epsilon.
+          x_t=\sqrt{\alpha_t\alpha_{t-1}}x_{t-2}+\sqrt{1 -\alpha_t\alpha_{t-1}}\epsilon.
           \]
 
           <p class="justified">
-          Finally, applying these substitutions for \(x_{t-2}\)  down 
-          to \(t=0\) we obtain a formulation to directly compute noisy samples at
-          step \(t\) directly from \(x_0\):
+            Finally, by applying these substitutions for \(x_{t-2}\) down
+            to \(t=0\), we obtain a formulation to compute noisy samples at
+            step \(t\) directly from \(x_0\):
           </p>
 
           \[
-          x_{t}=\sqrt{\bar{\alpha}_t}x_{0}+\sqrt{1-\bar\alpha_{t}}\epsilon,
+          x_t=\sqrt{\bar{\alpha}_t}x_0+\sqrt{1-\bar{\alpha}_t}\epsilon,
           \]
 
-          and its corresponding diffusion kernel
+          <p class="justified">
+            and its corresponding diffusion kernel:
+          </p>
 
           \[
-          q(x_t|x_0) = \mathcal{N}(\sqrt{\bar\alpha}x_0, (1 - \bar\alpha) \mathbf I).
+          q(x_t|x_0) = \mathcal{N}(\sqrt{\bar{\alpha}_t}x_0, (1 - \bar{\alpha}_t)\mathbf{I}).
           \]
 
-          <h4>Types of \(\beta_t\) scheduling </h4>
+          <h4>Types of \(\beta_t\) scheduling</h4>
           <p class="justified">
-          In the diffusion process the noise schedule controls the variance added
-          at each step \(\beta_t\). Intuitively, it defines how fast we "destroy"
-          the image. The schedule directly impacts with the learning of the model
-          as we want to make the denoising problem <strong> well conditioned at 
-          each step </strong>. If noise increases too fast, early steps will lose
-          image structure too rapidly, making it hard for the model to learn global
-          structure. If noise increases too slowly, the learning becomes inefficient
-          as there will be many redundant steps.
+            In the diffusion process, the noise schedule controls the variance added
+            at each step \(\beta_t\). Intuitively, it defines how fast we “destroy”
+            the image. The schedule directly impacts model learning,
+            as we want to make the denoising problem <strong>well-conditioned at
+            each step</strong>. If noise increases too fast, early steps lose
+            image structure too rapidly, making it hard for the model to learn global
+            structure. If noise increases too slowly, learning becomes inefficient
+            because there will be many redundant steps.
           </p>
 
           <p class="justified">
-            <strong>Linear schedule</strong>. In <a href="#ddpm">[2]</a> the authors proposed to use a linear 
-            scheduling going from \(\beta_1=10^{−4}\) up to \(\beta_T=0.02\). This was per 
-            se an improvement from the original paper in 2015 <a href="#thermo">[1]</a>. However, this 
-            schedule is rather aggressive in the way that images lost information 
-            from way too early in the process. 
+            <strong>Linear schedule</strong>. In <a href="#ddpm">[2]</a> the authors proposed a linear
+            schedule going from \(\beta_1=10^{-4}\) up to \(\beta_T=0.02\). This was in itself
+            an improvement over the original paper from 2015 <a href="#thermo">[1]</a>. However, this
+            schedule is rather aggressive in the sense that images lose information
+            too early in the process.
           </p>
 
           <p class="justified">
-            <strong>Cosine schedule</strong>. The paper in <a href="#iddpm">[3]</a> the proposed a softer 
-            schedule that prevents the information loss too early in the forward process. 
-            They introduced a cosine schedule of the following:
+            <strong>Cosine schedule</strong>. In <a href="#iddpm">[3]</a>, the authors proposed a softer
+            schedule that prevents information loss too early in the forward process.
+            They introduced a cosine schedule of the form:
           </p>
 
           \[
-          \beta_t=\text{clip}(1-\frac{\bar\alpha_t}{\bar\alpha_{t-1}}, 0.999) \text{where} \bar\alpha_t=f(t)/f(0) \text{and} f(t)=\cos(\frac{t/T+s}{1+s}\cdot\frac{\pi}{2})^2
+          \beta_t=\text{clip}\left(1-\frac{\bar\alpha_t}{\bar\alpha_{t-1}}, 0, 0.999\right), \qquad
+          \text{where } \bar\alpha_t=\frac{f(t)}{f(0)} \text{ and } f(t)=\cos\left(\frac{t/T+s}{1+s}\cdot\frac{\pi}{2}\right)^2
           \]
 
           <figure style="text-align:center;">
-            <img src="linear_cosine_schedule.png" width=762px />
+            <img src="linear_cosine_schedule.png" width="762" alt="Linear and cosine schedules" />
             <figcaption>
-              Figure. Example of forwad diffusion process using two schedules. 
-              Top: linear schedule, Bottom: cosine schedule.
+              Figure. Example of the forward diffusion process using two schedules.
+              Top: linear schedule. Bottom: cosine schedule. Figure from <a href="#iddpm">[3]</a>.
             </figcaption>
           </figure>
-
-          <h4>Sample python code of the forward diffusion process</h4>
-          <pre><code class="language-python">
-# Sample from forwad diffusion process given a schedule, time step, and x0.
-def forward_diffusion(x0, sqrt_alpha_cumulative, sqrt_one_minus_alpha_cumulative, timestep):
-  # x0: Tensor of shape [bs, C, H, W] containing original images.
-  # sqrt_alpha_cumulative: Tensor of shape [T], containing cumulative schedule: \sqrt{\bar\alpha}.
-  # sqrt_one_minus_alpha_cumulative: Tensor of shape [T], containing cumulative schedule \sqrt{1 - \bar\alpha}.
-  # timestep: Time step to obtain a sample from.
-  # Get random noise from a standard Gaussian distribution N(0, I)
-  epsilon = torch.randn_like(x0)
-  
-  # Now we apply the forward step using the reparametrization trick
-  # z = mean_x + \sigma_x * \epsilon
-  # x_t = \sqrt{\bar\alpha_t}*x_0 + \sqrt(1-\bar\alpha_t)*\epsilon
-  mean = sqrt_alpha_cumulative[timestep] * x0
-  std_dev = sqrt_one_minus_alpha_cumulative[timestep] 
-  sample  = mean + std_dev * epsilon
-
-  return sample, epsilon
-          </code></pre>
 
           <h3>Reverse process</h3>
 
           <p class="justified">
-          The reverse process is also modeled by a Markov chain. This time we attempt
-          to reconstruct the input \(x_0\) from the corrupted noised image \(x_T\).
-          For small \(\beta_t\) the reverse conditional \(p(x_{t-1}|x_t)\) is also
-          a normal distribution. Since estimating \(p(x_{t-1}|x_t)\) is not easy
-          as it requires to use all the data, instead we will use a neural network
-          to approximate the parameters of the conditional distribution 
-          (i.e. mean and variance). 
-          </p>
-
-
-          <p class="justified">
-          The reverse step starts from the last time step in the forward process
-          \(x_T\) with \(p(x_T) = \mathcal N (x_T; 0, \mathbf I)\). At each step
-          we apply a neural network parametrized by \(\theta\), on 
-          the input \(x_t\) to estimate the mean \(\boldsymbol \mu\) and covariance
-          \(\boldsymbol \Sigma\) of the distribution at step \(t\). The 
-          distribution of the reverse process is described as:
-          </p>
-
-          \[
-          p_{\theta}(x_{0:T}) = p(x_T)\prod_{t=1}^Tp(x_{t-1}|x_t),\ \ \ \text{with potentials} \ \ p(x_{t-1}|x_t)=\mathcal{N}(x_{t-1}; \boldsymbol{\mu}(x_t, t), \boldsymbol\Sigma(x_t, t)).
-          \]
-
-          <p class="justified">
-          From the previous definition we get the insight that the walks from 
-          0 to \(T\), and viceversa, are paths between the
-          simple and complex data distributions. These paths will look "noisy"
-          by the effect of sampling. 
-          Note as well that to generate a single image, the model has to be 
-          executed \(T\) times!
-          <p>
-
-          <!-- ul>
-            <li> The learning process will learn "components of the noise" </li>
-            <li> The walks from 0 to \(T\), and viceversa, are paths between the
-                 simple and complex data distributions. These paths will look "noisy"
-                 by the effect of sampling. A good example can be seen in the Figure below.</li>
-            <li> To generate an image the model has to be executed \(T\) times!</li>
-          </ul -->
-          
-          <h3> Learning a diffusion model </h3>
-          <h4> The ELBO</h4>
-
-          <p class="justified">
-          Our goal is to find the generative model that matches the original data 
-          distribution. We estimate the parameters of the distribition using
-          the log-likelihood. 
-          First, we define the probability that the generative 
-          model assigns to the data:
-          </p>
-
-         \[
-          -\log ( p_{\theta} (x_0) ) = -\int \log p_{\theta}(x_{0:T})dx_{1:T}.
-         \] 
-
-          <p class="justified">
-          Computing this probability exactly is intractable because it requires 
-          computing all the marginals of the steps \(0, 1, ..., T\). 
-          Instead, we observe that diffusion models 
-          can be interpreted as latent variable models given their processes
-          \(q\) and \(p_{\theta}\), similar to variational autoencoders (VAEs). 
-          This allows us to replace the intractable likelihood with a tractable 
-          surrogate objective, the Evidence Lower Bound (ELBO), which we can 
-          optimize during training.
+            The reverse process is also modeled by a Markov chain. This time, we attempt
+            to reconstruct the input \(x_0\) from the corrupted image \(x_T\).
+            For small \(\beta_t\), the reverse conditional \(p(x_{t-1}|x_t)\) is also
+            a normal distribution. Since estimating \(p(x_{t-1}|x_t)\) directly is not easy
+            because it requires using all the data, we instead use a neural network
+            to approximate the parameters of the conditional distribution
+            (that is, its mean and variance).
           </p>
 
           <p class="justified">
-          To determine the training objective we start by computing the 
-          relative probability, 
-          or likelihood ratio, between the forward and reverse process (\(p_{\theta}/q\)).
-          Then, we 
-          average it
-          over the forward trajectories: 
-          </p>
-
-         \[
-          p_{\theta} (x_0) = \int p_{\theta}(x_{0:T})dx_{1:T} {\color{blue}\frac{q(x_{1:t}|x_0)}{q(x_{1:t}|x_0)} }
-         \]
-
-         \[
-          p_{\theta} (x_0) = \int q(x_{1:T}|x_0) \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)} dx_{1:T} = \mathbb{E}_{q(x_{1:T}|x_0)}\left[ \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right].
-         \]
-
-          <!--p class="justified">
-          From the expectation above \(\mathbb{E}_{q(x_{1:T}|x_0)}\) we can define the ELBO.
-          </p -->
-
-          <p class="justified">
-          The ELBO is found by applying Jensen's inequality to the log likelihood
-          in the expectation above.
-          The inequality states that \({\color{blue}E[f(X)] \geq f(E[X])}\)
-          for a convex function \(f\). Since \(\log\) is convex the lower bound becomes:
+            The reverse step starts from the last time step in the forward process,
+            \(x_T\), with \(p(x_T) = \mathcal N(x_T; 0, \mathbf I)\). At each step,
+            we apply a neural network parameterized by \(\theta\) to
+            the input \(x_t\) in order to estimate the mean \(\boldsymbol \mu\) and covariance
+            \(\boldsymbol \Sigma\) of the distribution at step \(t\). The
+            reverse process is described as:
           </p>
 
           \[
-          \log p_{\theta}(x_0) \geq  \mathbb{E}_{q(x_{1:T}|x_0)}\left[ \log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right]. 
+          p_{\theta}(x_{0:T}) = p(x_T)\prod_{t=1}^T p_{\theta}(x_{t-1}|x_t), \qquad
+          \text{with } p_{\theta}(x_{t-1}|x_t)=\mathcal{N}(x_{t-1}; \boldsymbol{\mu}(x_t, t), \boldsymbol\Sigma(x_t, t)).
           \]
 
           <p class="justified">
-          To derive the learning objective we compute the expectation over all
-          samples in the true data distribution \(q(x_0)\) over the ELBO:
+            From the previous definition, we gain the intuition that the walks from
+            \(0\) to \(T\), and vice versa, are paths between the
+            simple and complex data distributions. These paths look noisy
+            because of the stochastic sampling process.
+            Note as well that to generate a single image, the model has to be
+            executed \(T\) times.
+          </p>
+
+          <h3>Learning a diffusion model</h3>
+          <h4>The ELBO</h4>
+
+          <p class="justified">
+            Our goal is to find the generative model that matches the original data
+            distribution. We estimate the parameters of the distribution using
+            the log-likelihood.
+            First, we define the probability that the generative
+            model assigns to the data:
           </p>
 
           \[
-          L \geq \int q(x_{0}) \mathbb{E}_{q(x_{1:T}|x_0)}\left[\log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right] dx_{0},
-          \]
-
-
-          \[
-          L \geq \int q(x_{0}) \int q(x_{1:T}|x_0) \log\frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)} dx_{1:T} dx_{0},
-          \]
-
-          \[
-          L \geq \int \underbrace{q(x_{0})q(x_{1:T}|x_0)}_{q(x_{0:T})} \log\frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)} dx_{0:T},
-          \]
-
-          <!--p class="justified">
-          We can get rid of the aweful expectation inside the integral by using
-          the Jensen's inequality. 
-          </p-->
-
-          \[
-          L \geq  \mathbb{E}_{q}\left[ \log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right],
+          \log ( p_{\theta} (x_0) ) = \int \log p_{\theta}(x_{0:T})dx_{1:T}.
           \]
 
           <p class="justified">
-          which to minimize we simply multiply by \(-1\) and invert the inequality.
+            Computing this probability exactly is intractable because it requires
+            computing all the marginals of the steps \(0, 1, ..., T\).
+            Instead, we observe that diffusion models
+            can be interpreted as latent variable models through the processes
+            \(q\) and \(p_{\theta}\), similar to variational autoencoders (VAEs).
+            This allows us to replace the intractable likelihood with a tractable
+            surrogate objective, the Evidence Lower Bound (ELBO), which we can
+            optimize during training.
+          </p>
+
+          <p class="justified">
+            To determine the training objective, we start by computing the
+            relative probability,
+            or likelihood ratio, between the forward and reverse processes (\(p_{\theta}/q\)).
+            We then average it
+            over the forward trajectories:
+          </p>
+
+          \[
+          \begin{align}
+          p_{\theta} (x_0) &= \int p_{\theta}(x_{0:T})dx_{1:T} {\color{blue}\frac{q(x_{1:T}|x_0)}{q(x_{1:T}|x_0)} },\\\\
+          &= \int q(x_{1:T}|x_0) \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)} dx_{1:T},\\\\
+          &= \mathbb{E}_{q(x_{1:T}|x_0)}\left[ \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right].
+          \end{align}
+          \]
+
+          <p class="justified">
+            The ELBO is obtained by applying Jensen’s inequality to the log-likelihood
+            in the expectation above.
+            The inequality states that \({\color{blue}\mathbb{E}[f(X)] \geq f(\mathbb{E}[X])}\)
+            for a convex function \(f\). Since \(\log\) is concave, the lower bound becomes:
+          </p>
+
+          \[
+          \log p_{\theta}(x_0) \geq  \mathbb{E}_{q(x_{1:T}|x_0)}\left[ \log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right].
+          \]
+
+          <p class="justified">
+            To derive the learning objective, we compute the expectation over all
+            samples in the true data distribution \(q(x_0)\) of the ELBO:
+          </p>
+
+          \[
+          \begin{align}
+          L &\geq \int q(x_{0}) \mathbb{E}_{q(x_{1:T}|x_0)}\left[\log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right] dx_{0},\\\\
+          L &\geq \int q(x_{0}) \int q(x_{1:T}|x_0) \log\frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)} dx_{1:T} dx_{0},\\\\
+          L &\geq \int \underbrace{q(x_{0})q(x_{1:T}|x_0)}_{q(x_{0:T})} \log\frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)} dx_{0:T},\\\\
+          L &\geq  \mathbb{E}_{q}\left[ \log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right],
+          \end{align}
+          \]
+
+          <p class="justified">
+            which, to minimize, we simply multiply by \(-1\) and invert the inequality.
           </p>
 
           <h4>Simplification of the training loss</h4>
 
           <p class="justified">
-          The training objective can be further modified into a
-          much simpler formulation making the learning process easier.
-          We start by expanding the distributions in the expectation and apply
-          log properties:
+            The training objective can be further transformed into a
+            much simpler formulation, making the learning process easier.
+            We start by expanding the distributions in the expectation and applying
+            log properties:
           </p>
 
-         \[
-          \mathbb E [-\log p_{\theta}(x_0)] \leq \mathbb E_{q}\left[-\log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right] = {\color{red}\mathbb E_{q} \left[-\log\frac{  p(x_T)\prod_{t=1}^Tp_{\theta}(x_{t-1}|x_t) }{\prod_{t=1}^Tq(x_t|x_{t-1}) }\right]},
-         \]
+          \[
+          \begin{align}
+          \mathbb E [-\log p_{\theta}(x_0)] &\leq \mathbb E_{q}\left[-\log \frac{ p_{\theta}(x_{0:T})}{q(x_{1:T}|x_0)}\right],\\\\
+          &\leq {\color{red}\mathbb E_{q} \left[-\log\frac{  p(x_T)\prod_{t=1}^Tp_{\theta}(x_{t-1}|x_t) }{\prod_{t=1}^Tq(x_t|x_{t-1}) }\right]},\\\\
+          &\leq \mathbb{E}_{q}\left[ -\log p(x_T) - \sum_{t\ge 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_t|x_{t-1})}\right],\\\\
+          &\leq \mathbb{E}_{q}\left[ -\log p(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_t|x_{t-1})} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right].
+          \end{align}
+          \]
 
-        \[
-        = \mathbb{E}_{q}\left[ -\log p(x_T) - \sum_{t\ge 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_t|x_{t-1})}\right],
-        \]
-          
+          <p class="justified">
+            Our true goal during learning is to compare the “true reverse step” and
+            the learned reverse step (through \(p_{\theta}\)). To access the
+            true reverse step, we can manipulate the terms in the inner sum using Bayes’
+            rule so that it appears through \(q\). In particular, using
+            \(q(x_t|x_{t-1}) = q(x_t)q(x_{t-1}|x_t)/q(x_{t-1})\), we obtain:
+          </p>
 
-        \[
-        = \mathbb{E}_{q}\left[ -\log p(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_t|x_{t-1})} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right].
-        \]
+          \[
+          \mathbb{E}_{q}\left[ -\log p_{\theta}(x_T) - {\color{blue}\sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t)}\cdot\frac{q(x_{t-1})}{q(x_t)}} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right]
+          \]
 
-        <p class="justified">
-        Our true goal during learning is to compare both the "true reversed step" and 
-        the learned reversed step (through \(p_{\theta}\)). To have access to the
-        true reverse step we can manipulate the terms in the inner sum using bayes
-        rule to have acces to it via \(q\). Particularly using 
-        \(q(x_t|x_{t-1}) = q(x_t)q(x_{t-1}|x_t)/q(x_{t-1})\) we obtain:
-        </p>
+          <p class="justified">
+            Here it is worth noting that the term \(q(x_t|x_{t-1})\) has high uncertainty
+            because we are trying to predict \(x_{t-1}\) only from \(x_t\), that is, many
+            clean images could have generated \(x_t\).
+            To address this, we introduce conditioning on \(x_0\) to reduce
+            uncertainty, make the computation tractable, and provide proper supervision
+            (we now have a unique answer) <a href="#thermo">[1]</a>.
+          </p>
 
+          \[
+          \mathbb{E}_{q}\left[ -\log p_{\theta}(x_T) - {\color{blue}\sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}\cdot\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right],
+          \]
 
-        \[
-        = \mathbb{E}_{q}\left[ -\log p_{\theta}(x_T) - {\color{blue}\sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t)}\cdot\frac{q(x_{t-1})}{q(x_t)}} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right]
-        \]
+          \[
+          \mathbb{E}_{q}\left[ -\log p_{\theta}(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}-\sum_{t>1}\log\underbrace{\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right].
+          \]
 
-        <p class="justified">
-        <!-- While the ELBO in itself is tractable,
-        after expanding the inner sum is not: to compute the term \(q(x_t|x_{t-1})\) 
-        it would require to marginalise over all
-        \(x_0\). -->
-        Here it's worth noting that the term \(q(x_t|x_{t-1})\) shows high uncertainty
-        because we are trying to predict \(x_{t-1}\) only from \(x_t\), i.e. many
-        clean images could have generated \(x_t\).
-        To address this we introduce a conditioning over \(x_0\) to reduce
-        uncertainty, make the computation tractable, and give proper supervision
-        (we now have a unique answer) <a href="#thermo">[1]</a>.
-        </p>
+          <p class="justified">
+            Expanding the underbraced term, we notice that many terms cancel
+            because the recurrence index is shifted by 1:
+          </p>
 
-        <!--
-        \[
-        q(x_t|x_{t-1}) = q(x_t|x_0)q(x_{t-1}|x_t,x_0)/q(x_{t-1}|x_0)
-        \]
-        -->
+          \[
+          \sum_{t>1}\log\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \log\prod_{t>1}\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \log\frac{q(x_1|x_0)}{q(x_T|x_0)},
+          \]
 
-        \[
-        = \mathbb{E}_{q}\left[ -\log p_{\theta}(x_T) - {\color{blue}\sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}\cdot\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right],
-        \]
+          <p class="justified">
+            and this can be further simplified by combining it with the last term of the
+            expectation:
+          </p>
 
-        \[
-        = \mathbb{E}_{q}\left[ -\log p_{\theta}(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}-\sum_{t>1}\log\underbrace{\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)}\right].
-        \]
+          \[
+          - \log\frac{q(x_1|x_0)}{q(x_T|x_0)} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)} = \log q(x_T|x_0)-\log p_{\theta}(x_0|x_1).
+          \]
 
-        <p class="justified">
-        Expanding the underbraced term we notice that many terms can be eliminated
-        as the recurrence index runs shifted by 1 (in red):
-        </p>
+          <p class="justified">
+            Bringing these terms back into the training objective, we obtain:
+          </p>
 
-        \[
-        \sum_{t>1}\log\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \log\prod_{t>1}\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \frac{q(x_{1}|x_0){\color{red}q(x_{2}|x_0)...q(x_{T-1}|x_0)}}{{\color{red}q(x_{2}|x_0)...q(x_{T-1}|x_0)}q(x_T|x_0)}=\log\frac{q(x_1|x_0)}{q(x_T|x_0)},
-        \]
+          \[
+           \mathbb{E}_{q}\left[ -\log p(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)} +\log q(x_T|x_0)-\log p_{\theta}(x_0|x_1) \right],
+          \]
 
-        <p class="justified">
-        and can be further simplified by combining it with the last term of the
-        expectation:
-        </p>
+          \[
+           \mathbb{E}_{q}\left[ -{\color{purple}\log \frac{ p(x_T)}{q(x_T|x_0)}} - \sum_{t> 1}{\color{blue} \log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}} -\log p_{\theta}(x_0|x_1)\right],
+          \]
 
-       \[
-        - \log\frac{q(x_1|x_0)}{q(x_T|x_0)} - \log\frac{p_{\theta}(x_0|x_1)}{q(x_1|x_0)} = \log q(x_T|x_0)-\log p_{\theta}(x_0|x_1).
-        \]
+          <p class="justified">
+            where the colored terms can be expressed as KL divergences:
+          </p>
 
+          \[
+           \mathbb{E}_{q}\left[ \underbrace{{\color{purple}D_{KL}(q(x_T|x_0) || p(x_T))}}_{L_T} + \sum_{t> 1}\underbrace{{\color{blue} D_{KL}( q(x_{t-1}|x_t,x_0) || p_{\theta}(x_{t-1}| x_t))}}_{L_{t-1}} -\underbrace{\log p_{\theta}(x_0|x_1)}_{L_0} \right]
+          \]
 
-        <p class="justified">
-        Bringing these terms back into the training objective we obtain:
-        </p>
+          <p class="justified">
+            Recall that the final latent at step \(T\) in the diffusion process is a normal
+            isotropic Gaussian distribution. Therefore, there are no learnable
+            parameters in \(L_T\),
+            and we can ignore this term
+            (we will also ignore \(L_0\)).
+          </p>
 
-        \[
-         \mathbb{E}_{q}\left[ -\log p(x_T) - \sum_{t> 1}\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)} +\log q(x_T|x_0)-\log p_{\theta}(x_0|x_1) \right],
-        \]
+          <h3>Putting things together</h3>
 
+          <p class="justified">
+            The learning process involves comparing the learned reverse distribution \(p_{\theta}\)
+            to the true reverse distribution \(q\). Specifically, we have:
+          </p>
 
-        \[
-         \mathbb{E}_{q}\left[ -{\color{purple}\log \frac{ p(x_T)}{q(x_T|x_0)}} - \sum_{t> 1}{\color{blue} \log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}} -\log p_{\theta}(x_0|x_1)\right],
-        \]
+          <ul>
+            <li>\(\mathbf{p_{\theta}(x_{t-1}|x_t)}\): The reverse process that
+              involves predicting the parameters of a normal distribution
+              \(\mu_{\theta}\) and \(\Sigma_{\theta}\) at each time step.
+              However, since the variances are modeled with a known variance schedule,
+              the potentials are approximated as in <a href="#ddpm">[2]</a>:
+              \(p_{\theta}(x_{t-1}|x_t) = {\color{purple}\mathcal{N}(x_{t-1}; \boldsymbol{\mu}_{\theta}(x_t, t), \beta_t\mathbf I)}\).
+              <strong>Then, we are left only with estimating \(\boldsymbol{\mu}_{\theta}\).</strong>
+            </li>
 
+            <li>\(\mathbf{q(x_t| x_{t-1})}\): The forward process potentials. Here,
+              we found that they become tractable when
+              conditioning on \(x_0\). Moreover, we have access to the “true reverse distribution”
+              by using Bayes’ rule and writing
+              \(q(x_{t-1}|x_t,x_0)\).
+              The forward process is modeled with a Gaussian with fixed variance schedule:
+              \(q(x_{t-1}|x_t,x_0)={\color{red}\mathcal{N}(x_{t-1}; \tilde{\boldsymbol{\mu}}(x_t, x_0), \tilde\beta_t\mathbf I)}\).
+            </li>
+          </ul>
 
-        <p class="justified">
-        where the coloured terms can be expressed as KL divergences:
-        </p>
+          <p class="justified">
+            Replacing
+            \({\color{purple}\mathcal{N}}\)
+            and
+            \({\color{red}\mathcal{N}}\)
+            into \(L_{t-1}\) gives:
+          </p>
 
-        \[
-         = \mathbb{E}_{q}\left[ \underbrace{{\color{purple}D_{KL}(q(x_T|x_0) || p(x_T))}}_{L_T} + \sum_{t> 1}\underbrace{{\color{blue} D_{KL}( q(x_{t-1}|x_t,x_0) || p_{\theta}(x_{t-1}| x_t)}}_{L_{t-1}} -\underbrace{\log p_{\theta}(x_0|x_1)}_{L_0} \right]
-        \]
+          \[
+            \begin{align}
+            L_{t-1}&=\mathbb{E}_q\left[\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}\right] = \mathbb{E}_q\left[\log\frac{{\color{purple}\mathcal{N}(x_{t-1}; \boldsymbol\mu_{\theta}(x_t, t), \beta_t\mathbf I)}}{{\color{red}\mathcal{N}(x_{t-1}; \tilde{\boldsymbol\mu}(x_t, x_0), \tilde\beta_t\mathbf I)}}\right],\\\\
+          &=\mathbb{E}_q\left[ \frac{1}{2\sigma_t^2}\left\|{\color{red}\tilde{\boldsymbol\mu}(x_t, x_0)}- {\color{purple}\boldsymbol\mu_{\theta}(x_t, t)} \right\|^2 \right]+C,
+            \end{align}
+          \]
 
-        <p class="justified">
-        Recall that the final latent in step \(T\) in the diffusion process is a Normal 
-        isotropic Gaussian distribution. Therefore, there are no learnable 
-        parameters in \(L_T\)
-        and we can completely ignore this term
-        (we will also ignore \(L_0\)).
-        </p>
+          <p class="justified">
+            where we used the Gaussian likelihood, applied \(\exp\), which cancels with \(\log\),
+            and grouped terms that do not depend on
+            \(\boldsymbol\mu_{\theta}\) or \(\tilde{\boldsymbol\mu}\)
+            into a constant \(C\). <strong>
+            This formulation directly motivates learning a parameterized model
+            \({\color{purple}\boldsymbol\mu_{\theta}(x_t, t)}\)
+            to approximate the true posterior mean
+            \({\color{red}\tilde{\boldsymbol\mu}(x_t, x_0)}\).</strong>
+          </p>
 
-        <h3>Putting things together </h3>
+          <p class="justified">
+            Deriving \(\tilde{\boldsymbol{\mu}}\) and \(\tilde\beta_t\) requires writing
+            the potentials using Bayes’ rule:
+            \[
+            q(x_{t-1}|x_t,x_0) = \frac{q(x_t|x_{t-1},x_0)q(x_{t-1}|x_0)}{q(x_t|x_0)},
+            \]
+            and then deriving the parameters of the Gaussian distribution. The final expressions
+            provided in <a href="#ddpm">[2]</a> are:
+          </p>
 
-        <p class="justified">
-        The learning process involves comparing the learned reversed distribution \(p_{\theta}\)
-        to the true reversed distribution \(q\). Specifically we have:
-        </p>
+          \[
+          \tilde{\boldsymbol\mu_t}(x_t, x_0) = \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t}x_0 + \frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}x_t,
+          \qquad
+          \tilde\beta_t=\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\beta_t,
+          \]
 
-        <ul>
-          <li> \(\mathbf{p_{\theta}(x_{t-1}|x_t)}\) The reverse process that 
-          involves predicting the parameters of a Normal distribution 
-          \(\mu_{\theta}\) and \(\Sigma_{\theta}\)  at each time step. 
-          However, since  the variances are modeled with a known variance schedule 
-          the potentials are approximated with <a href="#ddpm">[2]</a>
-          \(p_{\theta}(x_{t-1}|x_t) = {\color{purple}\mathcal{N}(x_{t-1}; \boldsymbol{\mu}_{\theta}(x_t, t), \beta_t\mathbf I)}\) 
-          . <strong> Therefore, we are only left to estimate \(\boldsymbol{\mu}_{\theta}\) </strong>. </li>
+          <p class="justified">
+            and we can use the closed form of \(x_t\) derived from
+            \(x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon\) to replace
+            \(x_0\), giving:
+          </p>
 
-          <li>\(\mathbf{q(x_t| x_{t-1})}\) The forward process potentials. Here 
-          we have found that they are tractable when 
-          conditioning on \(x_0\). Moreover, we have access to the "true reversed distribution"
-          by using Bayes rule and writing 
-          \(q(x_{t-1}|x_t,x_0)\). 
-          The forward process is modeled with a Gaussian with fixed variance schedule
-          \(q(x_{t-1}|x_t,x_0)={\color{red}\mathcal{N}(x_{t-1}; \tilde{\boldsymbol{\mu}}(x_t, x_0), \tilde\beta_t\mathbf I)}\). 
-          </li>
-        </ul>
+          \[
+            \begin{align}
+            \tilde{\boldsymbol\mu_t}(x_t, x_0) &= \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t} \cdot \frac{1}{\sqrt{\bar\alpha_t}}(x_t - \sqrt{1-\bar\alpha_t}\epsilon) + \frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}x_t,\\\\
+          {\color{red}\tilde{\boldsymbol\mu_t}(x_t, x_0)}&={\color{red}\frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon\right).}
+          \end{align}
+          \]
 
-        <p class="justified">
-        Replacing 
-        \({\color{purple}\mathcal{N}}\)
-        and
-        \({\color{red}\mathcal{N}}\)
-        into \(L_{t-1}\) gives:
-        </p>
+          <p class="justified">
+            During training, both \(x_t\) and \(x_0\) are available, which allows us to
+            compute this posterior in closed form and use it as a supervision signal.
+            Although \(x_0\) is used to compute the target, the model conditions only on
+            \(x_t\), thereby learning to infer the reverse transition without
+            direct access to \(x_0\) at inference time.
+            As a consequence, we can choose a parameterization of our learned model as:
+          </p>
 
-        \[
-          L_{t-1}=\mathbb{E}_q\left[\log\frac{ p_{\theta}(x_{t-1}| x_t)}{q(x_{t-1}|x_t,x_0)}\right] = \mathbb{E}_q\left[\log\frac{{\color{purple}\mathcal{N}(x_{t-1}; \boldsymbol\mu_{\theta}(x_t, t), \beta_t\mathbf I)}}{{\color{red}\mathcal{N}(x_{t-1}; \tilde{\boldsymbol\mu}(x_t, x_0), \tilde\beta_t\mathbf I)}}\right], 
-        \]
+          \[
+          \boldsymbol\mu_{\theta}(x_t, t)= \frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}{\color{blue}\epsilon_{\theta}(x_t, t)}\right),
+          \]
 
-        \[
-        L_{t-1}=\mathbb{E}_q\left[ \frac{1}{2\sigma_t^2}||{\color{red}\tilde{\boldsymbol\mu}(x_t, x_0)}- {\color{purple}\boldsymbol\mu_{\theta}(x_t, t)} ||^2 \right]+C,
-        \]
+          <p class="justified">
+            where \(\epsilon_{\theta}\) is now a function approximator intended to
+            predict \(\epsilon\) from \(x_t\).
+            This parameterization provides important advantages, as it transforms the
+            learning problem into predicting a fixed, time-invariant
+            distribution \(\epsilon \sim \mathcal{N}(0, \mathbf I)\),
+            rather than one that changes with the noise level at each
+            timestep through \(x_t\).
+            Using this parameterization in our learning objective leads to:
+          </p>
 
-        <p class="justified">
-        where we have used the definition 
-        of the Gaussian likelihood, applied \(\exp\) which cancels with \(\log\) 
-        and get rid of terms without \(\boldsymbol\mu_{\theta}\  \text{and} \ \tilde{\boldsymbol\mu}\) 
-        to a \(C\) constant. <strong> 
-        This formulation directly motivates learning a parameterized model
-        \({\color{purple}\boldsymbol\mu_{\theta}(x_t, x_0)} \)
-        to approximate the true posterior mean
-        \({\color{red}\tilde{\boldsymbol\mu}(x_t, x_0)} \). </strong>
-        </p>
+          \[
+          L_{t-1} = \mathbb{E}_q\left[\frac{1}{2\sigma_t^2}\left\lVert  {\color{red}\frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon\right)} - \frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}{\color{blue}\epsilon_{\theta}(x_t, t)}\right) \right\rVert^2\right],
+          \]
 
-        <p class="justified">
-        Deriving \(\tilde{\boldsymbol{\mu}}\) and \(\tilde\beta\) requires to write 
-        the potentials using the Bayes rule 
-        \(
-        q(x_{t-1}|x_t,x_0) = q(x_t|x_{t-1},x_0)q(x_{t-1}|x_0)/q(x_t|x_{0}),
-        \)
-        and derive the paramters of the Gaussian distribution. The final expressions 
-        provided in <a href="#ddpm">[2]</a> are:
-        </p>
+          \[
+          L_{t-1} = \mathbb{E}_q\left[K^2\left\| {\color{red}\epsilon}-{\color{blue}\epsilon_{\theta}(x_t, t)} \right\|^2\right],
+          \]
 
-        \[
-        \tilde{\boldsymbol\mu_t}(x_t, x_0) = \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t}x_0 + \frac{\sqrt\alpha(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}x_t\ \ \ \text{and} \ \ \tilde\beta_t=\frac{1-\bar\alpha_{t-1}}{1-\bar\alpha_t}\beta_t,
-        \]
+          <p class="justified">
+            where \(K= (1-\alpha_t)/ (\sigma_t\sqrt{2}\sqrt{\alpha_t(1-\bar\alpha_t}))\).
+            The authors in <a href="#ddpm">[2]</a> found that removing the scaling
+            factor \(K\) is beneficial for sample quality.
+            Using the formulation for \(x_t\), the training objective simplifies to:
+          </p>
 
-        <p class="justified">
-        and can use our closed form of \(x_t\) derived from
-        \(x_t=\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon\) to replace
-        for \(x_0\) giving:
-        </p>
+          \[
+          \mathbb{E}_{t,x_0,\epsilon} \left[\left\| {\color{red}\epsilon}-{\color{blue}\epsilon_{\theta}(x_t, t)} \right\|^2\right] =
+          \mathbb{E}_{t,x_0,\epsilon}\left[\left\| {\color{red}\epsilon}-{\color{blue}\epsilon_{\theta}(\sqrt{\bar\alpha_t}x_0+\sqrt{1-\bar\alpha_t}\epsilon, t)} \right\|^2\right],
+          \]
 
-        \[
-          \tilde{\boldsymbol\mu_t}(x_t, x_0) = \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t} \cdot \frac{1}{\sqrt{\bar\alpha_t}}(x_t - \sqrt{1-\bar\alpha_t})\epsilon + \frac{\sqrt\alpha(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}x_t,
-        \]
+          <p class="justified">
+            which is a standard MSE loss.
+          </p>
 
-        \[
-        {\color{red}\tilde{\boldsymbol\mu_t}(x_t, x_0)=\frac{1}{\sqrt{\bar\alpha_t}}\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon\right).}
-        \]
+          <h3>Implementation details</h3>
 
-
-        <p class="justified">
-        <!--Our learning objective reduces to predicting the mean \(\tilde{\boldsymbol\mu}\)
-        of the posterior distribution \(q(x_{t-1}| x_t, x_0)\)
-        induced by the forward diffusion process. -->
-        During training, both \(x_t, x_0\) are available, which allows us to 
-        compute this posterior in closed form and use it as a supervision signal.
-        Although \(x_0\) is used to compute the target, the model conditions only on 
-        \(x_t\) thereby learning to infer the reverse transition without 
-        direct access to \(x_0\) at inference time.
-        As a consequence we can choose a parameterization of our learned model to: 
-        </p>
-
-        \[
-        \boldsymbol\mu_{\theta}(x_t, t)= \frac{1}{\sqrt{\bar\alpha_t}}\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}{\color{blue}\epsilon_{\theta}(x_t, t)}\right), 
-        \]
-
-        <p class="justified">
-        where now \(\epsilon_{\theta}\) is a function approximator intended to 
-        predict \(\epsilon\) from \(x_t\).
-        This parameterization provides important advantages, as it transforms the 
-        learning problem into predicting a fixed, time-invariant 
-        distribution \(\epsilon \sim \mathcal{N}(0, \mathbf I)\), 
-        rather than one that changes with the noise level at each 
-        timestep with \(x_t\).
-        Using this parametrization in our learning objective leads to:
-        </p>
-
-
-        \[
-        L_{t-1} = \mathbb{E}_q\left[\frac{1}{2\sigma_t^2}\left\lVert  {\color{red}\frac{1}{\sqrt{\bar\alpha_t}}\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\epsilon\right)} - \frac{1}{\sqrt{\bar\alpha_t}}\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}{\color{blue}\epsilon_{\theta}(x_t, t)}\right) \right\rVert^2\right], 
-        \],
-
-
-        \[
-        L_{t-1} = \mathbb{E}_q\left[K^2|| ({\color{red}\epsilon}-{\color{blue}\epsilon_{\theta}(x_t, t)}) ||^2\right],
-        \]
-
-        <p class="justified">
-        where \(K= (1-\alpha_t)/ (\sigma_t\sqrt2\sqrt{\bar\alpha_t(1-\bar\alpha_t}))\).
-        The authors in <a href="#ddpm">[2]</a> have found that removing the scaling 
-        factor \(K\) is benificial for sample quality. 
-        Using the formulation for \(x_t\), the training objective simplifies to: 
-        </p>
-
-        \[
-        \mathbb{E}_{t,x_0,\epsilon} \left[|| ({\color{red}\epsilon}-{\color{blue}\epsilon_{\theta}(x_t, t)}) ||^2\right] = 
-       \mathbb{E}_{t,x_0,\epsilon}\left[|| ({\color{red}\epsilon}-{\color{blue}\epsilon_{\theta}(\sqrt{\bar\alpha}_tx_0+\sqrt{1+\bar\alpha_t}\epsilon, t)}) ||^2\right],
-      \]
-
-        <p class="justified">
-        which is a standard MSE loss.
-        </p>
-
-        <h3> Implementation details</h3>  
-
-          <h4>Training and sampling algorithms </h4>
+          <h4>Training and sampling algorithms</h4>
           <figure style="text-align:center;">
-            <img src="training_sampling_algo.png" width=712px />
+            <div style="display:flex; justify-content:center; gap:1px; flex-wrap:wrap;">
+              <img src="training_sampling_algo.png" width="490" alt="DDPM training and sampling algorithm" />
+              <img src="ddim_sampling.png" width="230" alt="DDIM sampling algorithm" />
+            </div>
             <figcaption>
-            Training and sampling algorithms provided by authors in <a href="#ddpm">[2]</a>.
+              DDPM training and sampling algorithms provided by the authors in <a href="#ddpm">[2]</a>,
+              and the DDIM sampling algorithm from <a href="#ddim">[4]</a>.
             </figcaption>
           </figure>
 
           <p class="justified">
-          The figure above shows the training and sampling algoritms provided
-          in <a href="#ddpm">[2]</a>.
-          During training, we start by picking a real example from the dataset 
-          and then deliberately corrupt it by adding noise at a randomly chosen 
-          timestep. Since we know exactly how much noise we added, the task 
-          becomes simple: we train the model to predict that noise using an MSE 
-          loss. By sampling different timesteps each time, the model gradually 
-          learns how to undo noise at every stage of the process, effectively 
-          learning all denoising steps in parallel.
+            The figure above shows the training and sampling algorithms provided
+            in <a href="#ddpm">[2]</a>.
+            During training, we start by picking a real example from the dataset
+            and then deliberately corrupt it by adding noise at a randomly chosen
+            timestep. Since we know exactly how much noise we added, the task
+            becomes simple: we train the model to predict that noise using an MSE
+            loss. By sampling different timesteps each time, the model gradually
+            learns how to undo noise at every stage of the process, effectively
+            learning all denoising steps in parallel.
           </p>
 
           <p class="justified">
-          At generation time, we reverse this idea. Instead of starting from a 
-          real image, we begin with pure noise and repeatedly apply the model to 
-          remove noise step by step. After many such steps, the noise is gradually 
-          transformed into a coherent data sample.
+            At generation time, we reverse this idea. Instead of starting from a
+            real image, we begin with pure noise and repeatedly apply the model to
+            remove noise step by step. After many such steps, the noise is gradually
+            transformed into a coherent data sample.
           </p>
 
-          <h4>Architecture of predictor </h4>
+          <h4>Deterministic sampling</h4>
+          <p class="justified">
+            The standard DDPM sampling procedure defines a stochastic reverse process
+            which requires a large number of steps \(T\) (for example, 1000) to generate
+            high-quality samples.
+            DDIM (Denoising Diffusion Implicit Models) generalizes this process by
+            defining a family of non-Markovian reverse processes that share the same
+            training objective but allow deterministic sampling.
+            Instead of sampling from a Gaussian at each step, DDIM defines a direct
+            mapping between
+            \(x_t\) and \(x_{t-1}\)
+            through the predicted clean sample:
+          </p>
 
+          \[
+          \hat{x}_0= \frac{x_t - \sqrt{1-\bar{\alpha}_t} \epsilon_{\theta}(x_t,t)}{ \sqrt{\bar{\alpha}_t} },
+          \]
 
           <p class="justified">
-          Diffusion models typically use a U-Net architecture with an encoder–decoder
-          structure and skip connections, allowing the model to capture both global 
-          structure and fine details.
-          In <a href="#ddpm">[2]</a> the network is built from residual blocks 
-          (which is shown in Figure below)
-          (Wide ResNet style) and uses group normalization for stable training.
-          self-attention layers are added at intermediate resolutions (e.g., 
-          \(16\times 16\)
-          to model long-range dependencies.
-          The diffusion timestep \(t\)
-          is incorporated via sinusoidal embeddings injected into each residual
-          block, allowing the model to adapt to different noise levels.
+            with reverse updates:
+          </p>
+
+          \[
+          x_{t-1}=\sqrt{\bar{\alpha}_{t-1}}\hat{x}_0+\sqrt{1-\bar\alpha_{t-1}}\epsilon_{\theta}(x_t,t).
+          \]
+
+          <p class="justified">
+            Note that DDIM uses the same training objective as DDPM,
+            namely the noise-prediction loss,
+            because both methods rely on the same forward noising process
+            \(q(x_t|x_0)\).
+            The difference lies only in the sampling procedure, not in the learned
+            model. In practice, DDIM enables sampling with significantly fewer steps
+            (for example, 20–50 instead of 1000), leading to much faster generation.
+            While reducing the number of steps may slightly decrease sample
+            diversity and, in extreme cases, quality, DDIM typically preserves high
+            perceptual quality even with aggressive step reduction.
+          </p>
+
+          <h4>Architecture of the predictor</h4>
+
+          <p class="justified">
+            Diffusion models typically use a U-Net architecture with an encoder-decoder
+            structure and skip connections, allowing the model to capture both global
+            structure and fine details.
+            In <a href="#ddpm">[2]</a>, the network is built from residual blocks
+            (as shown in the figure below)
+            in a Wide ResNet style and uses group normalization for stable training.
+            Self-attention layers are added at intermediate resolutions (for example,
+            \(16\times 16\))
+            to model long-range dependencies.
+            The diffusion timestep \(t\)
+            is incorporated via sinusoidal embeddings injected into each residual
+            block, allowing the model to adapt to different noise levels.
           </p>
 
           <figure style="text-align:center;">
-            <img src="unet_diffusion_arch.png" width=762px />
+            <img src="unet_diffusion_arch.png" width="762" alt="UNet diffusion architecture" />
             <figcaption>
-            UNet architecture used in <a href="#ddpm">[2]</a>. 
+              U-Net architecture used in <a href="#ddpm">[2]</a>.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section>
+          <h2>4. Conditioning Diffusion</h2>
+
+          <p class="justified">
+            Given the dramatic success of diffusion models in generating
+            high-quality samples, a natural next step is to introduce
+            conditioning in order to control the generation process
+            (for example, through class labels or text prompts).
+            Early generative models, such as GANs, extensively used
+            class labels to guide generation, and in some cases synthetic labels
+            when true labels were scarce.
+          </p>
+
+          <h3>Classifier guidance</h3>
+          <p class="justified">
+            Early approaches for conditioning diffusion generative models achieve
+            this using classifier guidance, which leverages
+            an external classifier to steer the diffusion process toward samples
+            that match the desired condition (in this case, labels).
+            Intuitively, the classifier provides
+            gradients that indicate how to iteratively modify noisy samples to
+            increase the likelihood of the target label, allowing the model
+            to trade off between sample quality and adherence to the
+            conditioning signal.
+          </p>
+
+          <p class="justified">
+            To understand how guidance works, we start with the unconditional reverse
+            process \(p_{\theta}(x_{t-1}|x_t)\), which we want to condition on a
+            label \(y\), and factorize
+            the joint distribution as:
+          </p>
+
+          \[
+          p_{\theta, \phi}(x_{t-1}|x_t, y) \propto p_{\theta}(x_{t-1}|x_t)p_{\phi}(y|x_{t-1}),
+          \]
+
+          <p class="justified">
+            where we have omitted the normalization constant.
+            In principle, it is hard to sample from this distribution, and
+            it is not directly suitable for deterministic sampling.
+            To work around this, the authors in <a href="#CG">[5]</a>
+            introduced a trick that connects
+            diffusion models and score matching in order to guide diffusion during
+            training and sampling.
+          </p>
+
+          <h4>Score matching and diffusion</h4>
+          <figure style="text-align:center;">
+            <img src="forward_backward_sde.png" width="512" alt="SDE forward and backward process" />
+            <figcaption>
+              Figure. Illustration of SDE diffusion modeling taken from <a href="#sde">[8]</a>.
             </figcaption>
           </figure>
 
+          <p class="justified">
+            The score of a probability density function is defined as
+            \(
+            \nabla_x \log p(x).
+            \)
+            A model (for example, a neural network) can be trained to match this score:
+          </p>
+
+          \[
+            \arg\min_{\theta} \mathbb{E}_{p(x)} \left\| s_{\theta}(x) - \nabla_x\log p(x)\right\|_2^2.
+          \]
+
+          <p class="justified">
+            The connection between score matching and diffusion modeling appears
+            in the context of stochastic differential equations (SDEs).
+            Recall that an ordinary differential equation (ODE)
+            \(dx = f(x,t)\, dt\) with initial condition \(x_0\) has solution:
+          </p>
+
+          \[
+          x_T = x_0 + \int_{0}^{T} f(x(t),t)dt,
+          \]
+
+          <p class="justified">
+            where \(x_T\) is the final state.
+            Intuitively, the solution to the ODE is defined by a vector field
+            \(f\) and an initial state \(x_0\), which together determine a unique
+            trajectory. This becomes visible when breaking the integral into smaller ranges,
+            for example \([x_0, x_1], [x_1, x_2], \ldots, [x_{T-1}, x_T]\).
+          </p>
+
+          <p class="justified">
+            In the context of generative modeling, we use SDEs to model the
+            forward and reverse processes in diffusion modeling.
+            SDEs introduce a probabilistic element into the evolution of a system:
+          </p>
+
+          \[
+            d\mathbf x = \mathbf f (\mathbf x, t)\, dt + g(t)\, d\mathbf w,
+          \]
+
+          <p class="justified">
+            where \(\mathbf f\) is the drift coefficient, \(g\) is a diffusion coefficient,
+            and \(\mathbf w\) is Gaussian noise. We can use this formulation
+            to model the forward process in diffusion.
+            The reverse of such an SDE describes the probability density in the
+            opposite direction, essentially undoing the forward process.
+            This SDE can be reversed if we know the score of the distribution
+            at each intermediate step, given by:
+          </p>
+
+          \[
+            d\mathbf x = \left[ \mathbf f (\mathbf x, t) - g(t)^2 {\color{red} \nabla_x\log p_t(\mathbf x)} \right] dt + g(t) d\mathbf w,
+          \]
+
+          <p class="justified">
+            which, in the context of diffusion, yields a score-based generative
+            model. Directly mapping this formulation to the previous
+            diffusion definitions, we obtain the forward diffusion:
+          </p>
+
+          \[
+            d\mathbf x_t = -\frac{1}{2}\beta(t)\mathbf x_t\, dt + \sqrt{\beta(t)}\, d\mathbf w,
+          \]
+
+          <p class="justified">
+            and the backward diffusion process:
+          </p>
+
+          \[
+            d\mathbf x_t = \left[  -\frac{1}{2}\beta(t)\mathbf x_t  - \beta(t) {\color{red} \nabla_{x_t}\log p_t(\mathbf x_t)} \right] dt + \sqrt{\beta(t)} d\mathbf w,
+          \]
+
+          <p class="justified">
+            which we can learn using an MSE loss.
+            This SDE-based diffusion formulation allows for exact likelihood
+            computation, which in turn can make sampling more efficient.
+            Additionally, the introduction of the score makes it possible to incorporate
+            conditional generation to sample from \(p(x_0|y)\), given a time-dependent
+            classifier \(p_t(y|x_t)\), by solving the reverse
+            conditional SDE:
+          </p>
+
+          \[
+            d\mathbf x = \left[ \mathbf f (\mathbf x, t) - g(t)^2 \left({\color{red} \nabla_x\log p_t(\mathbf x) + \nabla_x \log p_t(\mathbf y | \mathbf x)}\right) \right] dt + g(t) d\mathbf w.
+          \]
+
+          <h4>Leveraging classifier guidance</h4>
+          <p class="justified">
+            To apply classifier guidance in diffusion modeling, we start with the
+            forward process \(x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t}\epsilon\)
+            and its Gaussian potential
+            \(q(x_t|x_0) = \mathcal{N}(x_t; \sqrt{\bar{\alpha}_t}x_0, (1-\bar{\alpha}_t)\mathbf I)\).
+            For this Gaussian, the score is given by:
+          </p>
+
+          \[
+          \nabla_{x_t}\log q(x_t|x_0) = -\frac{1}{\sqrt{1-\bar{\alpha}_t}} \epsilon.
+          \]
+
+          <p class="justified">
+            We can remove the conditioning on \(x_0\) by computing its marginal:
+          </p>
+
+          \[
+          \begin{align}
+          \nabla_{x_t}\log q(x_t) &= \nabla_{x_t}\log \left[ \int q(x_t|x_0)q(x_0)dx_0 \right],\\\\
+          &= \mathbb{E}_{q} \left[ \nabla_{x_t}\log q(x_t|x_0) \right],\\\\
+          &= \mathbb{E}_{q} \left[ -\frac{1}{\sqrt{1-\bar{\alpha}_t}} \epsilon \right],\\\\
+          &=  -\frac{1}{\sqrt{1-\bar{\alpha}_t}} \mathbb{E}_{q}[\epsilon],
+          \end{align}
+          \]
+
+          <p class="justified">
+            and finally define the score estimator that predicts the noise
+            added to a sample:
+          </p>
+
+          \[
+          \nabla_{x_t}\log p_{\theta}(x_t) = -\frac{1}{\sqrt{1-\bar{\alpha}_t}} \epsilon_{\theta}(x_t).
+          \]
+
+          <p class="justified">
+            To incorporate guidance, we leverage the fact that diffusion models
+            estimate the score \(\nabla_{x_t}\log p_{\theta}(x_t)\).
+            By conditioning the distribution on label \(y\):
+          </p>
+
+          \[
+          \begin{align}
+          \nabla_{x_t}\log p_{\theta}(x_t|y) &= \nabla_{x_t}\log p_{\theta}(x_t) + \nabla_{x_t}\log p_{\phi}(y|x_t),\\\\
+          &= -\frac{1}{\sqrt{1-\bar{\alpha}_t}} \epsilon_{\theta}(x_t) + \nabla_{x_t}\log p_{\phi}(y|x_t).
+          \end{align}
+          \]
+
+          <p class="justified">
+            Finally, the new predictor for the score of the joint distribution is:
+          </p>
+
+          \[
+          \hat{\epsilon}(x_t) = \epsilon_{\theta}(x_t) - \sqrt{1-\bar{\alpha}_t}\nabla_{x_t}\log p_{\phi}(y|x_t).
+          \]
+
+          <p class="justified">
+            To apply classifier guidance to a generative task, the classifier
+            is trained separately on large labeled datasets, such as ImageNet.
+            The classifier is typically trained on the same noisy distribution
+            as the corresponding diffusion model, often using representations computed
+            by the encoder part of the architecture.
+            After training, the classifier is incorporated into the
+            sampling process.
+          </p>
+
+          <h4>Scaling classifier gradients</h4>
+          <p class="justified">
+            Although classifier guidance steers the generative process
+            toward a desired condition, in practice it is convenient to control the
+            influence of its gradient
+            by including a scale parameter \(s\):
+          </p>
+
+          \[
+          \hat{\epsilon}(x_t) = \epsilon_{\theta}(x_t) - s\cdot\sqrt{1-\bar{\alpha}_t}\nabla_{x_t}\log p_{\phi}(y|x_t).
+          \]
+
+          <p class="justified">
+            The intuition behind why scaling works is that the scale
+            \(s\) acts as an amplifier for the conditional score:
+            \(s\cdot\nabla_x\log p(y|x) = \nabla_x\log p(y|x)^s\).
+            In other words, larger values (for example, \(s>1\)) enhance the modes in the
+            distribution, making them sharper and adding more focus during sampling
+            to produce samples with higher fidelity.
+            Note, however, that this introduces a trade-off:
+            larger \(s\) yields better condition adherence at the cost of reduced
+            sample diversity.
+          </p>
+
+          <h3>Classifier-free guidance</h3>
+          <p class="justified">
+            Classifier guidance showed that we can control diffusion sampling
+            by steering the score toward a desired conditioning \(y\).
+            Although elegant, it requires training a separate classifier
+            on noisy inputs \(x_t\) for all timesteps \(t\).
+            This adds extra computation and complexity, especially when the conditioning
+            signal is something other than labels, such as text.
+            Classifier-free guidance removes the external classifier entirely:
+            instead of learning the conditional score by adding a classifier
+            gradient, the diffusion model is trained to produce both the
+            conditional and unconditional prediction.
+          </p>
+
+          <p class="justified">
+            Specifically, the model is a single neural network that models
+            \(p_{\theta}(x_t)\), parameterized
+            by the score estimator \(\epsilon_{\theta}(x_t, \varnothing)\),
+            and \(p_{\theta}(x_t | y)\), parameterized by
+            \(\epsilon_{\theta}(x_t, y)\).
+            The “empty” token \(\varnothing\) is used in the unconditional model
+            to remove the conditioning signal.
+            During training, the conditioning signal \(y\) is dropped with some
+            probability \(p_{uncond}\) and replaced by the empty token \(\varnothing\).
+            At sampling time, we use a linear combination of both predictions:
+          </p>
+
+          \[
+          \begin{align}
+          \hat{\epsilon}_{\theta}(x_t, y) &= (1-w)\cdot\epsilon_{\theta}(x_t, \varnothing) + w\cdot \epsilon_{\theta}(x_t,y),\\\\
+          &= \epsilon_{\theta}(x_t, \varnothing) + w\cdot(\epsilon_{\theta}(x_t, y) - \epsilon_{\theta}(x_t,\varnothing)).
+          \end{align}
+          \]
+
+          <p class="justified">
+            The difference between both predictions isolates the effect of the
+            conditioning.
+            This plays the same role as in classifier guidance, and the effect
+            of the scaling parameter is conceptually equivalent to sharpening the
+            conditional distribution.
+            Geometrically, the scaling parameter controls the strength of the
+            conditioning by amplifying the direction toward which to move the
+            unconditional prediction.
+          </p>
+
+          <h4>Sample code</h4>
+          <p class="justified">
+          The code below exemplifies a simple implementation using Pytorch of sampling with
+          classifier guidance and classifier-free guidance using DDIM sampling. 
+          The main differences lie in the computation of the gradient of the
+          classifier (using torch.autograd) and the twice inference of the
+          model for classifier-free guidance (with and without conditioning).
+          </p>
+
+          <div class="code-row">
+            <div class="code-block">
+            <div class="code-title">Sampling: classifier guidance </div>
+            <pre><code class="language-python">
+# DDIM timestep schedule: T-> timesteps used during training
+# num_sampling_steps <= T
+timesteps = torch.linspace(T, 1, num_sampling_steps).long()
+# image has this shape
+image_shape = [batch_size, channels, image_size, image_size]
+
+# start from noise
+xt = torch.randn(batch_size, channels, image_size, image_size)
+
+for i in range(len(timesteps)):
+    t = timesteps[i]
+    t_prev = timesteps[i+1] if i < len(timesteps)-1 else torch.tensor(0)
+
+    at = alpha_bar[t]
+    at_prev = alpha_bar[t_prev]
+    t_batch = torch.full((batch_size,), t.item(), dtype=torch.long)
+
+    # 1) predict noise with diffusion model
+    with torch.no_grad():
+        eps = eps_model(x, t_batch)
+
+    # 2) Compute classifier guidance gradient ∇_x log p(y| x_t)
+    xt_in = xt.detach().requires_grad_(True)
+    logits = classifier(xt_in, t_batch)
+    log_probs = F.log_softmax(logits, dim=1)
+    selected = log_probs[torch.arange(batch_size), y].sum()
+    grad = torch.autograd.grad(selected, xt_in)[0]
+
+    # 3) Convert score guidance into epsilon guidance: 
+    # eps_guided = eps - w * sqrt(1 - alpha_bar_t) * ∇_x
+    sigma_t = torch.sqrt(1.0 - at)
+    eps_guided = eps - guidance_scale * sigma_t * grad
+
+    # 4) Predict x0 from guided epsilon
+    x0_pred = (xt - torch.sqrt(1.0 - at) * eps_guided) / torch.sqrt(at)
+    x0_pred = x0_pred.clamp(-1.0, 1.0)
+
+    # 5) Deterministic DDIM update
+    xt = torch.sqrt(at_prev) * x0_pred + torch.sqrt(1.0 - at_prev) * eps_guided
+            </code></pre>
+            </div>
+            <div class="code-block">
+            <div class="code-title">Sampling: classifier-free guidance </div>
+            <pre><code class="language-python">
+# DDIM timestep schedule: T-> timesteps used during training
+# num_sampling_steps <= T
+timesteps = torch.linspace(T, 1, num_sampling_steps).long()
+# image has this shape
+image_shape = [batch_size, channels, image_size, image_size]
+
+# start from noise
+xt = torch.randn(batch_size, channels, image_size, image_size)
+
+for i in range(len(timesteps)):
+    t = timesteps[i]
+    t_prev = timesteps[i + 1] if i < len(timesteps) - 1 else torch.tensor(0)
+
+    at = alpha_bar[t]
+    at_prev = alpha_bar[t_prev]
+    t_batch = torch.full((batch_size,), t.item(), dtype=torch.long)
+
+    # 1) Predict unconditional and conditional noise
+    with torch.no_grad():
+        eps_uncond = eps_model(xt, t_batch, None)
+        eps_cond = eps_model(xt, t_batch, y)
+
+    # 2) Classifier-free guidance
+    eps_guided = eps_uncond + guidance_scale * (eps_cond - eps_uncond)
+
+    # 3) Predict x0 from guided epsilon
+    x0_pred = (xt - torch.sqrt(1.0 - at) * eps_guided) / torch.sqrt(at)
+    x0_pred = x0_pred.clamp(-1.0, 1.0)
+
+    # --------------------------------------------------
+    # 4) Deterministic DDIM update
+    xt = torch.sqrt(at_prev) * x0_pred + torch.sqrt(1.0 - at_prev) * eps_guided
+            </code></pre>
+            </div>
+          </div>
+
         </section>
+
         <section>
-          <h2> 4. Conditioning diffusion </h2>
-
-          <h3> Classifier guidance </h3>
-          <h3> Classifier free guidance </h3>
+          <h2>5. Latent Diffusion Models</h2>
         </section>
 
-        <section>
-          <h2> 5. Latent diffusion models</h2>
+        <!-- section>
+          <h2>6. Conditioning Priors</h2>
 
-        </section>
+          <div class="code-row">
+            <pre><code class="language-python">
+            </code></pre>
+# Code snippet 1
+            <pre><code class="language-python">
+# Code snippet 2
+            </code></pre>
+          </div>
+        </section -->
 
       </div>
     </main>
