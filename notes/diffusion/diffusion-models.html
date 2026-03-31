@@ -165,7 +165,7 @@ pre, code {
 <body>
 
   <div class="hero-image">
-    <img src="osaka_anmg.jpg" alt="Diffusion models banner image" />
+    <img src="osaka_anmg.jpg" alt="banner image" />
   </div>
 
   <div class="site-container note-page-container">
@@ -660,7 +660,7 @@ pre, code {
           </p>
 
           \[
-          \sum_{t>1}\log\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \log\prod_{t>1}\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \log\frac{q(x_1|x_0)}{q(x_T|x_0)},
+          \sum_{t>1}\log\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \log\prod_{t>1}\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)} = \frac{q(x_{1}|x_0){\color{red}q(x_{2}|x_0)...q(x_{T-1}|x_0)}}{{\color{red}q(x_{2}|x_0)...q(x_{T-1}|x_0)}q(x_T|x_0)} = \log\frac{q(x_1|x_0)}{q(x_T|x_0)},
           \]
 
           <p class="justified">
