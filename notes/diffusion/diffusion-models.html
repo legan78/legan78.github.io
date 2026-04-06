@@ -218,12 +218,26 @@ pre, code {
           <li id="CFG"><a href="https://arxiv.org/abs/2207.12598">Ho et al., 2022 — Classifier-Free Diffusion Guidance</a></li>
           <li id="SD"><a href="https://arxiv.org/abs/2112.10752">Rombach et al., 2022 — High-Resolution Image Synthesis with Latent Diffusion Models</a></li>
           <li id="sde"><a href="https://arxiv.org/pdf/2011.13456">Song et al., 2021 — Score-Based Generative Modeling through Stochastic Differential Equations</a></li>
+
+        <li id="SDXL"><a href="https://arxiv.org/abs/2307.01952">Podell et al.— SDXL: Improving Latent Diffusion Models for High-Resolution Image Synthesis</a></li>
+
+        <li id="RAE"><a href="https://arxiv.org/abs/2510.11690">Zheng et al.— Diffusion Transformers with Representation Autoencoders</a></li>
+
+        <li id="shi2025svg"><a href="https://openreview.net/forum?id=kdpeJNbFyf">Shi et al.— Latent Diffusion Model without Variational Autoencoder (SVG)</a></li>
+
+        <li id="sadat2024litevae"><a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/0735ab358bf9bf0f30af6c871b666ec8-Abstract-Conference.html">Sadat et al.— LiteVAE: Lightweight and Efficient VAEs for Latent Diffusion Models</a></li>
+
+        <li id="scalingDIT"><a href="https://arxiv.org/pdf/2601.16208">Tong et al. - Scaling Text-to-Image Diffusion Transformers with Representation Autoencoders</a></li>
+
+        <li id="SD3"><a href="https://arxiv.org/pdf/2403.03206">Esser et al. - Scaling Rectified Flow Transformers for High-Resolution Image Synthesis</a></li>
+
         </ol>
 
         <section id="overview" class="note-section">
           <h2>1. Introduction</h2>
           <p class="justified">
-            Diffusion models are a class of generative models inspired by an idea
+            Denoising diffusion probabilistic models (DDPM) are a class of 
+            generative models inspired by an idea
             from non-equilibrium statistical physics, which states:
           </p>
 
@@ -902,6 +916,94 @@ pre, code {
             perceptual quality even with aggressive step reduction.
           </p>
 
+          <h4>Sample code</h4>
+          <p class="justified">
+          Below there's sample code that illustrates the implementation of DDPM and DDIM
+          sampling in Pytorch.
+          While both of the sampling look similar, DDIM reduces the amount of 
+          denoising steps using uniformly spaced steps and computing an estimate
+          of \(x_0\).
+          </p>
+          
+          <div class="code-row">
+            <div class="code-block">
+            <div class="code-title">DDPM sampling</div>
+            <pre><code class="language-python">
+# Schedule
+T = 1000
+beta = torch.linspace(1e-4, 0.02, T)
+alpha = 1.0 - beta
+alpha_bar = torch.cumprod(alpha, dim=0)
+model.eval()
+
+# x_T ~ N(0, I)
+xt = torch.randn(batch_size, channels, image_size, image_size)
+
+for t in range(T - 1, -1, -1):
+    t_batch = torch.full((batch_size,), t, dtype=torch.long)
+
+    # epsilon_{theta}
+    with torch.no_grad():
+        eps = model(xt, t_batch)
+
+    a_t = alpha[t]
+    ab_t = alpha_bar[t]
+    b_t = beta[t]
+
+    # DDPM mean:
+    mean = (1.0 / torch.sqrt(a_t)) * (
+        xt - (b_t / torch.sqrt(1.0 - ab_t)) * eps
+    )
+
+    # update samples
+    if t > 0:
+        z = torch.randn_like(x)
+        sigma = torch.sqrt(b_t) 
+        xt = mean + sigma * z
+    else:
+        xt = mean
+            </code></pre>
+            </div>
+            <div class="code-block">
+            <div class="code-title">DDIM Sampling</div>
+            <pre><code class="language-python">
+T = 1000
+# Reduced number of sampling steps than DDPM
+num_sampling_steps = 50
+
+# Schedule
+beta = torch.linspace(1e-4, 0.02, T)
+alpha = 1.0 - beta
+alpha_bar = torch.cumprod(alpha, dim=0)
+timesteps = torch.linspace(T - 1, 0, num_sampling_steps).long()
+model.eval()
+
+# x_T ~ N(0, I)
+xt = torch.randn(batch_size, channels, image_size, image_size)
+
+for i in range(len(timesteps)):
+    t = timesteps[i]
+    t_prev = timesteps[i + 1] if i < len(timesteps) - 1 else torch.tensor(-1)
+    t_batch = torch.full((batch_size,), t.item(), dtype=torch.long)
+
+    with torch.no_grad():
+        eps = model(xt, t_batch)
+
+    ab_t = alpha_bar[t]
+
+    # predict x0
+    x0_pred = (xt - torch.sqrt(1.0 - ab_t) * eps) / torch.sqrt(ab_t)
+
+    if t_prev >= 0:
+        ab_prev = alpha_bar[t_prev]
+        # pure DDIM deterministic (no random component) with eta=0
+        xt = torch.sqrt(ab_prev) * x0_pred + torch.sqrt(1.0 - ab_prev) * eps
+    else:
+        xt = x0_pred
+            </code></pre>
+            </div>
+          </div>
+
           <h4>Architecture of the predictor</h4>
 
           <p class="justified">
@@ -922,7 +1024,8 @@ pre, code {
           <figure style="text-align:center;">
             <img src="unet_diffusion_arch.png" width="762" alt="UNet diffusion architecture" />
             <figcaption>
-              U-Net architecture used in <a href="#ddpm">[2]</a>.
+              Figure. Illustration of the UNet architecture used in <a href="#ddpm">[2]</a> 
+              taken from <a href="#tutocvpr">cvpr tutorial</a>.
             </figcaption>
           </figure>
         </section>
@@ -976,9 +1079,13 @@ pre, code {
 
           <h4>Score matching and diffusion</h4>
           <figure style="text-align:center;">
-            <img src="forward_backward_sde.png" width="512" alt="SDE forward and backward process" />
+            <div style="display:flex; justify-content:center; gap:1px; flex-wrap:wrap;">
+            <img src="forward_backward_sde.png" width="350" alt="SDE forward and backward process" />
+            <img src="generation_reverse_sde.png" width="350" alt="SDE forward and backward process" />
+            </div>
             <figcaption>
-              Figure. Illustration of SDE diffusion modeling taken from <a href="#sde">[8]</a>.
+              Figure. Left:Illustration of SDE diffusion modeling taken from <a href="#sde">[8]</a>
+              Right: Trajectory field induced by SDE taken from <a href="#tutocvpr">cvpr tutorial</a>.
             </figcaption>
           </figure>
 
@@ -1068,6 +1175,18 @@ pre, code {
           \[
             d\mathbf x = \left[ \mathbf f (\mathbf x, t) - g(t)^2 \left({\color{red} \nabla_x\log p_t(\mathbf x) + \nabla_x \log p_t(\mathbf y | \mathbf x)}\right) \right] dt + g(t) d\mathbf w.
           \]
+
+
+          <p class="justified">
+          Score-based diffusion models have a direct link with flow matching models.
+          While flow matching skips the stochastic formulation and directly 
+          learns a velocity field that transports samples along a deterministic 
+          path from noise to data, both frameworks define a time-dependent vector 
+          field governing how samples evolve.
+          In fact, the probability flow ODE induced by an SDE yields a 
+          deterministic velocity field equivalent to the one learned in flow matching.
+          I will not dive deeper on flow matching now and leave it for another time.
+          </p>
 
           <h4>Leveraging classifier guidance</h4>
           <p class="justified">
@@ -1301,6 +1420,214 @@ for i in range(len(timesteps)):
 
         <section>
           <h2>5. Latent Diffusion Models</h2>
+
+          <figure style="text-align:center;">
+            <img src="stable_diffusion_arch.png" width="512"/>
+            <figcaption>
+              Figure. Architecture of stable diffusion taken from <a href="#SD">[7]</a>.
+            </figcaption>
+          </figure>
+
+          <p class="justified">
+          Early formulations of diffusion-based image generative models operate
+          directly in the pixel space.
+          They represent a computational cost challenge because even for low-resolution
+          images, the model must perform repetitive denoising operations over
+          large dimensional tensors.
+          Note also that redundant local details,
+          where explicit modeling is not necessary, still require model evaluations,
+          but can be safely abstracted. 
+          Latent diffusion models (LDM) address these observations by finding a suitable
+          latent space that trades off computational efficiency
+          while preserving perceptual information.
+          These properties have made LDMs one of the most widely adopted frameworks in the community. 
+          </p>
+
+          <p class="justified">
+          Learning an LDM is normally divided into two stages. First, there is a
+          perceptual compression stage, where the goal is to learn a compact, powerful,
+          and smooth image representation space that is "diffusion friendly".
+          The second stage is where the generative modeling occurs, i.e., a diffusion
+          model learns the semantics and composition of the data.
+          This two-stage formulation allows for training a computationally efficient 
+          diffusion model with improved scalability to high-resolution image generation, 
+          while maintaining a learning objective analogous to that of DDPM:
+          </p>
+
+          \[
+          L_{LDM} = \mathbb{E}_{z,y,t,\epsilon}\left[||\epsilon - \epsilon_{\theta}(z_t, t, y)||_2^2 \right],
+          \]
+
+          <p class="justified">
+          where \(z_t\) is the latent at denoising step \(t\), \(y\) is a conditioning
+          signal (e.g., labels or text prompts), and \(\epsilon_{\theta}\) is a noise
+          estimator.
+          </p>
+
+          <h3>Image latent space</h3>
+          <p class="justified">
+          The image latent representation defines the geometry of the space 
+          in which the diffusion operations take place.
+          In stable diffusion <a href="#SD">[7]</a>, this is achieved by modeling
+          the image manifold with a Variational Autoencoder (VAE).
+          Their design consists of a UNet-like convolutional architecture composed of an 
+          encoder \(\mathcal{E} \) and a decoder \(\mathcal{D}\), where the 
+          encoder computes an image latent representation \(z=\mathcal{E}(x)\) and 
+          the decoder reconstructs
+          the image from the latent \(x=\mathcal{D}(z)\).
+          Contrary to a deterministic autoencoder that operates in a fragmented
+          manifold, VAEs produce a regular latent space that is diffusion friendly.
+          The KL regularization term in the VAE's training objective encourages the latent representation
+          to stay closer to a simple Gaussian prior, making the latent space smoother.
+          Stable diffusion trains the VAE in an adversarial
+          fashion using a combination of objectives:
+          </p>
+
+          \[
+          L_{VAE} = \lambda_1 L_{disc} + \lambda_2 L_{adv} + \lambda_3 L_{rec} + \lambda_4 L_{KL}.
+          \]
+
+          <p class="justified"> 
+          Latent representations are typically tensors of dimensions 
+          \(z\in\mathbb{R}^{h\times w \times c}\),
+          where \(h\) and \(w\) are obtained
+          by downsizing image dimensions by a factor typically \(r\in\{2,4,8,16,32\}\).
+          Additionally, in stable diffusion, latents are scaled to normalize their variance so that
+          it matches the unit variance assumption of the diffusion process via
+          \(z=s\cdot z\), where \(s\) is a scaling factor (0.18215 in SD V1).
+          </p>
+
+          <p class="justified">
+          While VAE-based latent representations are computationally efficient 
+          and make high-resolution generation practical, they also come with some 
+          important limitations. 
+          First, the latent space is heavily compressed, resulting in fine image 
+          details inevitably being lost. Second, given the VAE is trained mainly to 
+          reconstruct images, the latent representation may lack semantic meaning 
+          and miss high-level object understanding. Finally, 
+          the simple Gaussian prior constrains expressivity, limiting its ability
+          to represent complex distributions.
+          </p>
+
+          <p class="justified">
+          While some research has refined the original VAE design and equipped it with
+          better perceptual losses and architectures <a href="#SDXL">[9]</a>,
+          a clear shift in recent literature is the move toward representation-driven
+          latent spaces, where the encoder is no longer trained purely for reconstruction
+          and enforcing a generative prior,
+          but instead leverages pretrained self-supervised models.
+          In particular, Representation Autoencoders (RAEs) such as <a href="#RAE">[10]</a> 
+          or 
+          <a href="#scalingDIT">[13]</a> 
+          replace the VAE encoder with frozen representation backbones such as 
+          DINO and learn only a decoder to reconstruct images. 
+          This results in latent variables 
+          that are high-dimensional, semantically structured, and better aligned 
+          with downstream tasks, in contrast to the low-dimensional Gaussian latents 
+          of VAEs. 
+          An even stronger departure from the VAE paradigm is seen in approaches 
+          that eliminate the autoencoder altogether, such as SVG (latent diffusion 
+          without VAE), where diffusion is performed directly on pretrained feature spaces 
+          augmented with lightweight reconstruction modules <a href="#SVG">[11]</a>.
+          </p>
+
+          <h3>Conditioning</h3>
+          <p class="justified">
+          In the same form as DDPMs, latent diffusion models are capable of modeling
+          conditional distributions in latent spaces in the form \(p(z|y)\), where
+          the conditioning signal can be in the form of labels, text, semantic maps, or other
+          image-to-image translation tasks (e.g., inpainting).
+          The most widely adopted principle to introduce conditioning in LDMs is
+          through cross-attention between latents and embeddings from the conditioning
+          signal.
+          </p>
+
+          <p class="justified">
+          Perhaps the simplest form was introduced in stable diffusion by using
+          a domain-specific encoder for the conditioning signal 
+          \(\tau_{\theta}(y)\in\mathbb{R}^{M\times d} \) that projects \(y\) to
+          an intermediate representation, which is then mapped to the UNet layers with
+          cross-attention following:
+          </p>
+
+          \[
+          Q = W_Q h_t, \ \ \ \ K=W_K \tau_{\theta}(y), \ \ \ \ V=W_V\tau_{\theta}(y),
+          \]
+
+          \[
+          Attention(Q, K, V) = \text{softmax}\left( \frac{QK^{\top}}{\sqrt{d}}  \right) \cdot V,
+          \]
+
+          <p class="justified">
+          \(h_t\) is an intermediate representation of the latent \(z_t\), e.g.,
+          convolutional feature maps from \(z_t\) in stable diffusion.
+          The design of the encoder \(\tau_{\theta}(y)\) greatly depends on the 
+          input modality.
+          Stable diffusion uses CLIP-like embeddings for conditioning on text
+          and a combination of image encoders for other image-to-image tasks.
+          </p>
+
+          <p class="justified">
+          Cross-attention conditioning settled a new standard in generative modeling.
+          The research evolution of conditioning has recently shifted
+          from a one-way conditioning injection into a multi-modal token interaction 
+          inside the model architecture, e.g., transformers. 
+          A good example is the Stable Diffusion 3 family <a href="#SD3">[14]</a>,
+          which introduces a 
+          transformer-based architecture where text tokens and image tokens are 
+          handled separately but can exchange information in both directions. 
+          This means the model doesn’t treat text as just an external input 
+          anymore but instead text and image features are combined in a more 
+          balanced and integrated way.
+          </p>
+
+          <h3>Learning a latent diffusion model</h3>
+          <p class="justified">
+          Learning an LDM follows a recipe that brings together the previous sections
+          into place.
+          The first step is to learn an image latent representation where
+          images are projected into a latent representation \(z\) by an encoder
+          \(\mathcal{E}\) and a decoder \(\mathcal{D}\) that maps latents to image 
+          space.
+          These representations are normally kept fixed after this first step.
+          The second step is to learn a diffusion model in the latent space, 
+          trained on pairs of latents and conditioning signals \(z_0, y\), where
+          latents \(z_0=\mathcal{E}(x)\), and using the forward diffusion
+          process:
+          </p>
+
+          \[
+          z_t = \sqrt{\bar{\alpha}_t} z_0 + \sqrt{1-\bar{\alpha}_t} \epsilon, \ \ \ \epsilon\sim\mathcal{N}(0, I),
+          \]
+
+          <p class="justified">
+          and introduce conditioning using cross-attention between the output of a
+          signal encoder \(\tau_{\theta}(y)\) (e.g., text encoder) and a representation 
+          of the latent
+          \(z_t\).
+          Following this, the third step is to optimize the LDM training objective,
+          which remains a mirror of the standard noise prediction:
+          </p>
+
+          \[
+          L_{LDM} = \mathbb{E}_{z,y,t,\epsilon}\left[||\epsilon - \epsilon_{\theta}(z_t, t, y)||_2^2 \right],
+          \]
+
+          <p class="justified">
+          At inference, samples are generated by iteratively denoising,
+          starting from \(z_t\sim\mathcal{N}(0,I)\), and using classifier-free
+          guidance to compute the noise estimation:
+          </p>
+
+          \[
+          \hat{\epsilon}_{\theta} = \epsilon_{\theta}(z_t, t, \varnothing) + w\cdot (\epsilon_{\theta}(z_t, t, \tau_{\theta}(y)) - \epsilon_{\theta}(z_t, t, \varnothing)).
+          \]
+
+          <p class="justified">
+          Finally, after obtaining denoised samples, the decoder \(\mathcal{D}(z_0)\)
+          is used to map the samples to the pixel space.
+          </p>
+
         </section>
 
         <!-- section>
